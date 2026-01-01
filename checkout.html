@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Checkout</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <h1>Checkout</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="add-product.html">Add Product</a>
+      <a href="checkout.html">Checkout (<span id="cart-count">0</span>)</a>
+      <span id="user-area"></span>
+    </nav>
+  </header>
+
+  <main>
+    <section id="cart-area"></section>
+
+    <section id="payment" style="display:none">
+      <h2>Payment</h2>
+      <label><input type="radio" name="method" value="ewallet" checked /> E-Wallet</label>
+      <label><input type="radio" name="method" value="bank" /> Bank (QR)</label>
+
+      <div id="ewallet-form">
+        <label>Wallet ID / Email
+          <input id="wallet-id" type="text" required />
+        </label>
+      </div>
+
+      <div id="bank-qr" style="display:none">
+        <p>Scan this QR with your banking app:</p>
+        <div class="qr-placeholder">[QR CODE]</div>
+      </div>
+
+      <div class="actions">
+        <button id="pay" class="btn primary">Pay</button>
+      </div>
+    </section>
+
+    <p id="empty-msg" class="muted">Your cart is empty.</p>
+  </main>
+
+  <script src="js/app.js"></script>
+  <script>
+    const cartArea = document.getElementById('cart-area');
+    const emptyMsg = document.getElementById('empty-msg');
+    const paymentSection = document.getElementById('payment');
+    const methodEls = document.querySelectorAll('input[name="method"]');
+
+    const renderCart = () => {
+      const cart = getCart();
+      cartArea.innerHTML = '';
+      if (!cart || cart.length === 0) {
+        emptyMsg.style.display = 'block';
+        paymentSection.style.display = 'none';
+        return;
+      }
+      emptyMsg.style.display = 'none';
+      paymentSection.style.display = '';
+      const products = getProducts();
+      let total = 0;
+      cart.forEach(item => {
+        const p = products.find(x => x.id === item.id);
+        if (!p) return;
+        total += p.price * item.qty;
+        const row = document.createElement('div');
+        row.className = 'cart-row';
+        const opts = item.options || {};
+        const optsLabel = [];
+        if (opts.size) optsLabel.push('Size: ' + escapeHtml(opts.size));
+        if (opts.color) optsLabel.push('Color: ' + escapeHtml(opts.color));
+        const optsText = optsLabel.length ? ` (${optsLabel.join(', ')})` : '';
+        row.innerHTML = `${escapeHtml(p.name)}${optsText} x ${item.qty} — $${(p.price * item.qty).toFixed(2)}`;
+        cartArea.appendChild(row);
+      });
+      const totalEl = document.createElement('h3');
+      totalEl.textContent = 'Total: $' + total.toFixed(2);
+      cartArea.appendChild(totalEl);
+    }
+
+    // payment method toggles
+    methodEls.forEach(el => el.addEventListener('change', () => {
+      const val = document.querySelector('input[name="method"]:checked').value;
+      document.getElementById('ewallet-form').style.display = val === 'ewallet' ? '' : 'none';
+      document.getElementById('bank-qr').style.display = val === 'bank' ? '' : 'none';
+    }));
+
+    document.getElementById('pay').addEventListener('click', () => {
+      const method = document.querySelector('input[name="method"]:checked').value;
+      if (method === 'ewallet') {
+        const wallet = document.getElementById('wallet-id').value.trim();
+        if (!wallet) return alert('Enter wallet ID or email');
+      }
+      // Simulate payment success
+      alert('Payment successful');
+      saveCart([]);
+      updateCartCount();
+      renderCart();
+    });
+
+    renderCart();
+    updateCartCount();
+  </script>
+</body>
+</html>

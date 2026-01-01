@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Product Detail</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <h1>Product</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="add-product.html">Add Product</a>
+      <a href="checkout.html">Checkout (<span id="cart-count">0</span>)</a>
+      <span id="user-area"></span>
+    </nav>
+  </header>
+
+  <main>
+    <div id="product-detail"></div>
+  </main>
+
+  <script src="js/app.js"></script>
+  <script>
+    const qs = new URLSearchParams(location.search);
+    const id = qs.get('id');
+    const container = document.getElementById('product-detail');
+    if(!id){ container.innerHTML = '<p>Product not found.</p>'; }
+    const products = getProducts();
+    const product = products.find(p=>p.id===id);
+    if(!product){ container.innerHTML = '<p>Product not found.</p>'; }
+
+    const render = () => {
+      container.innerHTML = `
+        <div class="card" data-id="${product.id}" data-name="${escapeHtml(product.name)}" data-brand="${escapeHtml(product.brand || '')}" data-category="${escapeHtml(product.category || '')}" data-price="${Number(product.price).toFixed(2)}" data-description="${escapeHtml(product.description || '')}" data-colors="${(product.colors||[]).join(',')}" data-sizes="${(product.sizes||[]).join(',')}" data-image="${escapeHtml(product.image || '')}">
+          <img src="${product.image || 'https://via.placeholder.com/600x400?text=Product'}" alt="${escapeHtml(product.name)}" style="height:300px;object-fit:cover;"/>
+          <h2>${escapeHtml(product.name)}</h2>
+          <p class="meta">Brand: ${escapeHtml(product.brand || '')} &nbsp; Category: ${escapeHtml(product.category || '')}</p>
+          <p class="price">$${Number(product.price).toFixed(2)}</p>
+          <p>${escapeHtml(product.description || '')}</p>
+
+          <label>Size
+            <select id="opt-size">
+              <option value="">Select size</option>
+              ${ (product.sizes && product.sizes.length) ? product.sizes.map(s=>`<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('') : `
+              <option value="S">S</option>
+              <option value="M">M</option>
+              <option value="L">L</option>
+              <option value="XL">XL</option>`}
+            </select>
+          </label>
+
+          <label>Color
+            <select id="opt-color">
+              <option value="">Select color</option>
+              ${ (product.colors && product.colors.length) ? product.colors.map(c=>`<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('') : `
+              <option value="Red">Red</option>
+              <option value="Blue">Blue</option>
+              <option value="Green">Green</option>`}
+            </select>
+          </label>
+
+          <label>Quantity
+            <input id="opt-qty" type="number" min="1" value="1" />
+          </label>
+
+          <div class="actions">
+            <button id="add-cart" class="btn">Add to cart</button>
+            <button id="buy-now" class="btn primary">Buy Now</button>
+          </div>
+        </div>
+      `;
+
+      const size = document.getElementById('opt-size');
+      const color = document.getElementById('opt-color');
+      const qty = document.getElementById('opt-qty');
+      const addBtn = document.getElementById('add-cart');
+      const buyBtn = document.getElementById('buy-now');
+
+      const validate = () => {
+        const okQty = Number(qty.value) >= 1;
+        const sizeRequired = product.sizes && product.sizes.length;
+        const colorRequired = product.colors && product.colors.length;
+        const okSize = !sizeRequired || (size && size.value);
+        const okColor = !colorRequired || (color && color.value);
+        const ok = okQty && okSize && okColor;
+        addBtn.disabled = !ok;
+        buyBtn.disabled = !ok;
+      }
+      // initial
+      validate();
+      size.addEventListener('change', validate);
+      color.addEventListener('change', validate);
+      qty.addEventListener('input', validate);
+
+      addBtn.addEventListener('click', ()=>{
+        addToCart(product.id, Number(qty.value), {size:size.value, color:color.value});
+        updateCartCount();
+        alert('Added to cart');
+      });
+
+      buyBtn.addEventListener('click', ()=>{
+        // replace cart with only this item and go to checkout
+        saveCart([{id:product.id, qty:Number(qty.value), options:{size:size.value, color:color.value}}]);
+        updateCartCount();
+        location.href = 'checkout.html';
+      });
+    }
+
+    if (product) render();
+  </script>
+</body>
+</html>

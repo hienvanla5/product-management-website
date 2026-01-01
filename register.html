@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Register</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <h1>Register</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="add-product.html">Add Product</a>
+      <a href="checkout.html">Checkout (<span id="cart-count">0</span>)</a>
+      <span id="user-area"></span>
+    </nav>
+  </header>
+
+  <main class="auth-wrapper">
+    <form id="registerForm" novalidate class="auth-card">
+      <h2>Register</h2>
+
+      <div class="form-row">
+        <label class="form-label" for="name">Name</label>
+        <div class="form-field">
+          <input id="name" type="text" maxlength="255" required />
+          <div id="err-name" class="error-msg" aria-live="polite"></div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label class="form-label" for="email">Email</label>
+        <div class="form-field">
+          <input id="email" type="email" required />
+          <div id="err-email" class="error-msg" aria-live="polite"></div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label class="form-label" for="password">Password (min 6)</label>
+        <div class="form-field">
+          <input id="password" type="password" minlength="6" required />
+          <div id="err-password" class="error-msg" aria-live="polite"></div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label class="form-label" for="confirm">Confirm Password</label>
+        <div class="form-field">
+          <input id="confirm" type="password" minlength="6" required />
+          <div id="err-confirm" class="error-msg" aria-live="polite"></div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="btn primary" id="register-btn">Register</button>
+      </div>
+      <div class="auth-footer">Already have an account? <a href="login.html">Login</a></div>
+    </form>
+  </main>
+
+  <script src="js/app.js"></script>
+  <script>
+    // Sequential validation: enable only next field when prior fields are valid
+    const nameEl = document.getElementById('name');
+    const emailEl = document.getElementById('email');
+    const passEl = document.getElementById('password');
+    const confEl = document.getElementById('confirm');
+    const regBtn = document.getElementById('register-btn');
+
+    const errName = document.getElementById('err-name');
+    const errEmail = document.getElementById('err-email');
+    const errPass = document.getElementById('err-password');
+    const errConf = document.getElementById('err-confirm');
+
+    function setError(el, errEl, msg){ errEl.textContent = msg; el.classList.add('input-error'); }
+    function clearError(el, errEl){ errEl.textContent = ''; el.classList.remove('input-error'); }
+
+    function validateName(){
+      const v = (nameEl.value||'').trim();
+      if(!v){ setError(nameEl, errName, 'Name is required'); return false; }
+      if(v.length > 255){ setError(nameEl, errName, 'Name too long (max 255)'); return false; }
+      clearError(nameEl, errName);
+      return true;
+    }
+
+    function validateEmail(){
+      const v = (emailEl.value||'').trim();
+      if(!v){ setError(emailEl, errEmail, 'Email is required'); return false; }
+      if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){ setError(emailEl, errEmail, 'Invalid email format'); return false; }
+      clearError(emailEl, errEmail);
+      return true;
+    }
+
+    function validatePass(){
+      const v = (passEl.value||'');
+      if(!v || v.trim().length < 6){ setError(passEl, errPass, 'Password must be at least 6 characters'); return false; }
+      clearError(passEl, errPass);
+      return true;
+    }
+
+    function validateConfirm(){
+      const v = (confEl.value||'');
+      if(v !== passEl.value){ setError(confEl, errConf, 'Passwords do not match'); return false; }
+      clearError(confEl, errConf);
+      return true;
+    }
+
+    // initialize sequential state
+    emailEl.disabled = true;
+    passEl.disabled = true;
+    confEl.disabled = true;
+    regBtn.disabled = true;
+
+    // track touched to show errors only after interaction
+    const touched = {name:false,email:false,password:false,confirm:false};
+
+    // Name handlers
+    nameEl.addEventListener('blur', ()=>{
+      touched.name = true;
+      const ok = validateName();
+      if(ok) emailEl.disabled = false; else { emailEl.disabled = true; passEl.disabled = true; confEl.disabled = true; regBtn.disabled = true; }
+    });
+    nameEl.addEventListener('input', ()=>{
+      if(touched.name){ const ok = validateName(); if(ok) emailEl.disabled = false; else { emailEl.disabled = true; passEl.disabled = true; confEl.disabled = true; regBtn.disabled = true; } }
+    });
+
+    // Email handlers
+    emailEl.addEventListener('blur', ()=>{
+      touched.email = true;
+      const ok = validateEmail();
+      if(ok && validateName()) passEl.disabled = false; else { passEl.disabled = true; confEl.disabled = true; regBtn.disabled = true; }
+    });
+    emailEl.addEventListener('input', ()=>{
+      if(touched.email){ const ok = validateEmail(); if(ok && validateName()) passEl.disabled = false; else { passEl.disabled = true; confEl.disabled = true; regBtn.disabled = true; } }
+    });
+
+    // Password handlers
+    passEl.addEventListener('blur', ()=>{
+      touched.password = true;
+      const ok = validatePass();
+      if(ok && validateName() && validateEmail()) confEl.disabled = false; else { confEl.disabled = true; regBtn.disabled = true; }
+    });
+    passEl.addEventListener('input', ()=>{
+      if(touched.password){ const ok = validatePass(); if(ok && validateName() && validateEmail()) confEl.disabled = false; else { confEl.disabled = true; regBtn.disabled = true; } }
+      if(touched.confirm) validateConfirm();
+    });
+
+    // Confirm handlers
+    confEl.addEventListener('blur', ()=>{
+      touched.confirm = true;
+      const ok = validateConfirm();
+      if(ok && validateName() && validateEmail() && validatePass()) regBtn.disabled = false; else regBtn.disabled = true;
+    });
+    confEl.addEventListener('input', ()=>{
+      if(touched.confirm){ const ok = validateConfirm(); if(ok && validateName() && validateEmail() && validatePass()) regBtn.disabled = false; else regBtn.disabled = true; }
+    });
+
+    // on submit, mark all touched and validate sequentially
+    const form = document.getElementById('registerForm');
+    form.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      touched.name = touched.email = touched.password = touched.confirm = true;
+      const nOk = validateName();
+      if(!nOk){ emailEl.disabled = true; passEl.disabled = true; confEl.disabled = true; regBtn.disabled = true; return; }
+      const eOk = validateEmail();
+      if(!eOk){ passEl.disabled = true; confEl.disabled = true; regBtn.disabled = true; return; }
+      const pOk = validatePass();
+      if(!pOk){ confEl.disabled = true; regBtn.disabled = true; return; }
+      const cOk = validateConfirm();
+      if(!cOk){ regBtn.disabled = true; return; }
+
+      // all valid
+      try{
+        const name = nameEl.value.trim();
+        const email = emailEl.value.trim();
+        const password = passEl.value;
+        await registerUser({name,email,password});
+        alert('Registered and logged in');
+        window.location.href = 'index.html';
+      }catch(err){ alert(err.message||String(err)); }
+    });
+  </script>
+</body>
+</html>

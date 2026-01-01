@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Store — Home</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <h1>My Store</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="add-product.html">Add Product</a>
+      <a href="checkout.html">Checkout (<span id="cart-count">0</span>)</a>
+      <span id="user-area"></span>
+    </nav>
+  </header>
+
+  <main>
+    <section id="product-list" class="grid"></section>
+    <p id="empty-msg" class="muted">No products yet. Go to Add Product to add one.</p>
+  </main>
+
+  <script src="js/app.js"></script>
+  <script>
+    // Render products on Home
+    const renderHome = () => {
+      const list = document.getElementById('product-list');
+      const empty = document.getElementById('empty-msg');
+      const products = getProducts();
+      list.innerHTML = '';
+      if (!products || products.length === 0) {
+        empty.style.display = 'block';
+        return;
+      }
+      empty.style.display = 'none';
+      products.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        // attach product metadata as data-* attributes for easier access and testing
+        card.setAttribute('data-id', p.id);
+        card.setAttribute('data-name', p.name || '');
+        card.setAttribute('data-brand', p.brand || '');
+        card.setAttribute('data-category', p.category || '');
+        card.setAttribute('data-price', String(p.price));
+        card.setAttribute('data-description', p.description || '');
+        card.setAttribute('data-colors', (p.colors || []).join(','));
+        card.setAttribute('data-sizes', (p.sizes || []).join(','));
+        card.setAttribute('data-image', p.image || '');
+
+        card.innerHTML = `
+          <a href="product.html?id=${encodeURIComponent(p.id)}"><img src="${p.image || 'https://via.placeholder.com/300x200?text=Product'}" alt="${escapeHtml(p.name)}"/></a>
+          <h3><a href="product.html?id=${encodeURIComponent(p.id)}">${escapeHtml(p.name)}</a></h3>
+          <p class="price">$${Number(p.price).toFixed(2)}</p>
+          <a class="btn" href="product.html?id=${encodeURIComponent(p.id)}">View</a>
+        `;
+        list.appendChild(card);
+      });
+
+      // note: add-to-cart moved to product detail page so buttons removed from home
+
+    }
+
+    // initial
+    renderHome();
+    updateCartCount();
+
+    // Add Product quick form on home page
+    (function(){
+      const addForm = document.getElementById('addForm');
+      if(!addForm) return;
+      const nameEl = document.getElementById('name');
+      const brandEl = document.getElementById('brand');
+      const categoryEl = document.getElementById('category');
+      const priceEl = document.getElementById('price');
+      const descriptionEl = document.getElementById('description');
+
+      const fields = [
+        {id:'name', el:nameEl, required:true, validator:v=>!!v.trim(), msg:'Name is required', touched:false},
+        {id:'brand', el:brandEl, required:true, validator:v=>!!v.trim(), msg:'Brand is required', touched:false},
+        {id:'category', el:categoryEl, required:true, validator:v=>!!v.trim(), msg:'Category is required', touched:false},
+        {id:'price', el:priceEl, required:true, validator:v=>v!=='' && !isNaN(Number(v)), msg:'Price must be numeric', touched:false},
+        {id:'description', el:descriptionEl, required:true, validator:v=>!!v.trim(), msg:'Description is required', touched:false},
+        {id:'colors', el:document.getElementById('colors'), required:false, touched:false},
+        {id:'sizes', el:document.getElementById('sizes'), required:false, touched:false},
+        {id:'image', el:document.getElementById('image'), required:false, touched:false}
+      ];
+
+      function getErrorEl(id){ return document.getElementById(id+'-error'); }
+
+      function isFieldValid(field){
+        const val = (field.el && field.el.value !== undefined) ? String(field.el.value) : '';
+        return field.required ? !!field.validator(val) : true;
+      }
+
+      function showError(field){
+        if(!field.el) return;
+        field.el.classList.add('input-error');
+        const errEl = getErrorEl(field.id);
+        if(errEl){ errEl.style.display = 'block'; errEl.textContent = field.msg || 'Invalid'; }
+      }
+      function hideError(field){
+        if(!field.el) return;
+        field.el.classList.remove('input-error');
+        const errEl = getErrorEl(field.id);
+        if(errEl){ errEl.style.display = 'none'; errEl.textContent = ''; }
+      }
+
+      function validateFieldDisplay(field){
+        const ok = isFieldValid(field);
+        if(field.touched && !ok) showError(field); else hideError(field);
+        return ok;
+      }
+
+      function updateStates(){
+        let prevAllValid = true;
+        for(let i=0;i<fields.length;i++){
+          const f = fields[i];
+          if(!prevAllValid){ if(f.el) f.el.disabled = true; } else { if(f.el) f.el.disabled = false; }
+          if(f.required){
+            const ok = isFieldValid(f);
+            if(!ok) prevAllValid = false;
+          }
+          validateFieldDisplay(f);
+        }
+        const allReqOk = fields.filter(f=>f.required).every(isFieldValid);
+        const submitBtn = document.getElementById('submit');
+        if(submitBtn) submitBtn.disabled = !allReqOk;
+      }
+
+      fields.forEach(f=>{
+        if(!f.el) return;
+        f.el.addEventListener('blur', ()=>{ f.touched = true; validateFieldDisplay(f); updateStates(); });
+        f.el.addEventListener('input', ()=>{ if(f.touched) validateFieldDisplay(f); updateStates(); });
+      });
+
+      updateStates();
+
+      addForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        let allValid = true;
+        fields.filter(f=>f.required).forEach(f=>{ f.touched = true; if(!isFieldValid(f)) allValid = false; });
+        if(!allValid) return updateStates();
+
+        const product = {
+          id: Date.now().toString(),
+          name: nameEl.value.trim(),
+          brand: brandEl.value.trim(),
+          category: categoryEl.value.trim(),
+          price: Number(priceEl.value),
+          description: descriptionEl.value.trim(),
+          colors: (document.getElementById('colors').value || '').split(',').map(s=>s.trim()).filter(Boolean),
+          sizes: (document.getElementById('sizes').value || '').split(',').map(s=>s.trim()).filter(Boolean),
+          image: document.getElementById('image').value.trim(),
+        };
+        if (!product.name || product.name.length > 255) return alert('Invalid name');
+        if (isNaN(product.price)) return alert('Invalid price');
+        if (!product.brand) return alert('Brand is required');
+        if (!product.category) return alert('Category is required');
+        if (!product.description) return alert('Description is required');
+
+        const products = getProducts();
+        products.unshift(product);
+        saveProducts(products);
+        alert('Product added');
+        addForm.reset();
+        fields.forEach(f=>{ f.touched = false; });
+        updateStates();
+        renderHome();
+      });
+    })();
+
+    // listen for localStorage changes from other tabs
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'products' || e.key === 'cart') renderHome();
+    });
+  </script>
+</body>
+</html>

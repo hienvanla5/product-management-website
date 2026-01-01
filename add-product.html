@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Add Product</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <h1>Add Product</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="add-product.html">Add Product</a>
+      <a href="checkout.html">Checkout (<span id="cart-count">0</span>)</a>
+      <span id="user-area"></span>
+    </nav>
+  </header>
+
+  <main>
+    <form id="addForm" class="multistep" novalidate>
+      <div class="step" data-step="1">
+        <h2>Product Info</h2>
+        <label>Product Name (1-255 chars)
+          <input name="name" id="name" type="text" maxlength="255" required />
+        </label>
+        <div id="name-error" class="error-msg" style="display:none">Name is required</div>
+        <label>Brand
+          <input name="brand" id="brand" type="text" maxlength="255" required />
+        </label>
+        <div id="brand-error" class="error-msg" style="display:none">Brand is required</div>
+        <label>Category
+          <input name="category" id="category" type="text" maxlength="255" required />
+        </label>
+        <div id="category-error" class="error-msg" style="display:none">Category is required</div>
+        <label>Price (numeric)
+          <input name="price" id="price" type="number" step="0.01" min="0" required />
+        </label>
+        <div id="price-error" class="error-msg" style="display:none">Price must be numeric</div>
+
+        <label>Description
+          <textarea name="description" id="description"></textarea>
+        </label>
+        <div id="description-error" class="error-msg" style="display:none">Description is required</div>
+        <label>Colors (comma-separated, e.g. Red,Blue)
+          <input name="colors" id="colors" type="text" placeholder="Red, Blue, Green" />
+        </label>
+        <label>Sizes (comma-separated, e.g. S,M,L)
+          <input name="sizes" id="sizes" type="text" placeholder="S, M, L, XL" />
+        </label>
+        <label>Image URL
+          <input name="image" id="image" type="url" />
+        </label>
+
+        <div class="actions">
+          <button type="submit" id="submit" class="btn primary">Add Product</button>
+        </div>
+      </div>
+
+
+    </form>
+  </main>
+
+  <script src="js/app.js"></script>
+  <script>
+    // sequential field validation & enabling (lazy per-field validation)
+    const nameEl = document.getElementById('name');
+    const brandEl = document.getElementById('brand');
+    const categoryEl = document.getElementById('category');
+    const priceEl = document.getElementById('price');
+    const descriptionEl = document.getElementById('description');
+    const addForm = document.getElementById('addForm');
+
+    const fields = [
+      {id:'name', el:nameEl, required:true, validator:v=>!!v.trim(), msg:'Name is required', touched:false},
+      {id:'brand', el:brandEl, required:true, validator:v=>!!v.trim(), msg:'Brand is required', touched:false},
+      {id:'category', el:categoryEl, required:true, validator:v=>!!v.trim(), msg:'Category is required', touched:false},
+      {id:'price', el:priceEl, required:true, validator:v=>v!=='' && !isNaN(Number(v)), msg:'Price must be numeric', touched:false},
+      {id:'description', el:descriptionEl, required:true, validator:v=>!!v.trim(), msg:'Description is required', touched:false},
+      {id:'colors', el:document.getElementById('colors'), required:false, touched:false},
+      {id:'sizes', el:document.getElementById('sizes'), required:false, touched:false},
+      {id:'image', el:document.getElementById('image'), required:false, touched:false}
+    ];
+
+    function getErrorEl(id){ return document.getElementById(id+'-error'); }
+
+    function isFieldValid(field){
+      const val = (field.el && field.el.value !== undefined) ? String(field.el.value) : '';
+      return field.required ? !!field.validator(val) : true;
+    }
+
+    function showError(field){
+      if(!field.el) return;
+      field.el.classList.add('input-error');
+      const errEl = getErrorEl(field.id);
+      if(errEl){ errEl.style.display = 'block'; errEl.textContent = field.msg || 'Invalid'; }
+    }
+    function hideError(field){
+      if(!field.el) return;
+      field.el.classList.remove('input-error');
+      const errEl = getErrorEl(field.id);
+      if(errEl){ errEl.style.display = 'none'; errEl.textContent = ''; }
+    }
+
+    function validateFieldDisplay(field){
+      const ok = isFieldValid(field);
+      if(field.touched && !ok) showError(field); else hideError(field);
+      return ok;
+    }
+
+    function updateStates(){
+      // enable each field only if all previous required fields are valid (no visual errors unless touched)
+      let prevAllValid = true;
+      for(let i=0;i<fields.length;i++){
+        const f = fields[i];
+        if(!prevAllValid){ if(f.el) f.el.disabled = true; } else { if(f.el) f.el.disabled = false; }
+        if(f.required){
+          const ok = isFieldValid(f);
+          if(!ok) prevAllValid = false;
+        }
+        // show/hide only if touched
+        validateFieldDisplay(f);
+      }
+      // update submit button
+      const allReqOk = fields.filter(f=>f.required).every(isFieldValid);
+      const submitBtn = document.getElementById('submit');
+      if(submitBtn) submitBtn.disabled = !allReqOk;
+    }
+
+    // attach listeners for lazy validation
+    fields.forEach(f=>{
+      if(!f.el) return;
+      f.el.addEventListener('blur', ()=>{
+        f.touched = true;
+        validateFieldDisplay(f);
+        updateStates();
+      });
+      f.el.addEventListener('input', ()=>{
+        // live feedback only for touched fields
+        if(f.touched) validateFieldDisplay(f);
+        updateStates();
+      });
+    });
+
+    // initial state (no errors shown)
+    updateStates();
+
+    addForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      // mark all required fields as touched and validate
+      let allValid = true;
+      fields.filter(f=>f.required).forEach(f=>{ f.touched = true; if(!isFieldValid(f)) allValid = false; });
+      if(!allValid) return updateStates();
+
+      const product = {
+        id: Date.now().toString(),
+        name: nameEl.value.trim(),
+        brand: brandEl.value.trim(),
+        category: categoryEl.value.trim(),
+        price: Number(priceEl.value),
+        description: descriptionEl.value.trim(),
+        colors: (document.getElementById('colors').value || '').split(',').map(s=>s.trim()).filter(Boolean),
+        sizes: (document.getElementById('sizes').value || '').split(',').map(s=>s.trim()).filter(Boolean),
+        image: document.getElementById('image').value.trim(),
+      };
+      // final validation (safety)
+      if (!product.name || product.name.length > 255) return alert('Invalid name');
+      if (isNaN(product.price)) return alert('Invalid price');
+      if (!product.brand) return alert('Brand is required');
+      if (!product.category) return alert('Category is required');
+      if (!product.description) return alert('Description is required');
+
+      const products = getProducts();
+      products.unshift(product);
+      saveProducts(products);
+      alert('Product added');
+      window.location.href = 'index.html';
+    });
+  </script>
+</body>
+</html>

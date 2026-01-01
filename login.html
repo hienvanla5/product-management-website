@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Login</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <h1>Login</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="add-product.html">Add Product</a>
+      <a href="checkout.html">Checkout (<span id="cart-count">0</span>)</a>
+      <span id="user-area"></span>
+    </nav>
+  </header>
+
+  <main class="auth-wrapper">
+    <form id="loginForm" novalidate class="auth-card">
+      <h2>Login</h2>
+
+      <div class="form-row">
+        <label class="form-label" for="email">Email</label>
+        <div class="form-field">
+          <input id="email" type="email" required />
+          <div id="err-email" class="error-msg" aria-live="polite"></div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label class="form-label" for="password">Password</label>
+        <div class="form-field">
+          <input id="password" type="password" required />
+          <div id="err-password" class="error-msg" aria-live="polite"></div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="btn primary">Login</button>
+      </div>
+      <div class="auth-footer">Don't have an account? <a href="register.html">Register</a></div>
+    </form>
+  </main>
+
+  <script src="js/app.js"></script>
+  <script>
+    const form = document.getElementById('loginForm');
+    form.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      try{
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        await loginUser({email,password});
+        alert('Logged in');
+        window.location.href = 'index.html';
+      }catch(err){
+        alert(err.message||String(err));
+      }
+    });
+  </script>
+</body>
+</html>
