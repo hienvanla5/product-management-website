@@ -5,6 +5,201 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Checkout</title>
   <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .cart-container {
+      margin-bottom: 2rem;
+    }
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      background: #f9f9f9;
+      border-radius: 8px;
+      gap: 2rem;
+    }
+    .item-info h3 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.1rem;
+    }
+    .item-options {
+      color: #666;
+      font-size: 0.9rem;
+      margin-bottom: 0.3rem;
+    }
+    .item-type {
+      color: #888;
+      font-size: 0.85rem;
+      margin-bottom: 0.3rem;
+    }
+    .item-price {
+      font-weight: 600;
+      color: #2563eb;
+    }
+    .item-controls {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    .quantity-control {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 0.3rem;
+    }
+    .qty-btn {
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: #f0f0f0;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+    .qty-btn:hover {
+      background: #e0e0e0;
+    }
+    .qty-input {
+      width: 50px;
+      text-align: center;
+      border: none;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    .qty-input::-webkit-inner-spin-button,
+    .qty-input::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .item-total {
+      font-size: 1.1rem;
+      font-weight: 700;
+      min-width: 80px;
+      text-align: right;
+    }
+    .btn-remove {
+      padding: 0.5rem 1rem;
+      border: 1px solid #dc2626;
+      background: white;
+      color: #dc2626;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-remove:hover {
+      background: #dc2626;
+      color: white;
+    }
+    .order-summary {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      border: 2px solid #e5e7eb;
+      max-width: 400px;
+      margin-left: auto;
+    }
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      font-size: 1rem;
+    }
+    .summary-row.discount {
+      color: #16a34a;
+      font-weight: 600;
+    }
+    .summary-row.total {
+      border-top: 2px solid #e5e7eb;
+      margin-top: 0.5rem;
+      padding-top: 1rem;
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+    #checkout-form {
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      margin-top: 2rem;
+    }
+    #checkout-form h2 {
+      margin-top: 0;
+      margin-bottom: 1rem;
+      color: #1f2937;
+    }
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+    .form-group select,
+    .form-group input[type="text"] {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+    .form-group input[type="radio"] {
+      margin-right: 0.5rem;
+    }
+    .voucher-row {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-end;
+    }
+    .voucher-row > div {
+      flex: 1;
+    }
+    #apply-voucher {
+      padding: 0.75rem 1.5rem;
+      white-space: nowrap;
+    }
+    .success-msg, .error-msg {
+      padding: 0.75rem;
+      border-radius: 6px;
+      margin-top: 0.5rem;
+    }
+    .success-msg {
+      background: #dcfce7;
+      color: #166534;
+      border: 1px solid #86efac;
+    }
+    .error-msg {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fca5a5;
+    }
+    @media (max-width: 768px) {
+      .cart-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .item-controls {
+        width: 100%;
+        justify-content: space-between;
+      }
+      .order-summary {
+        max-width: 100%;
+      }
+      .voucher-row {
+        flex-direction: column;
+      }
+      #apply-voucher {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
 <body>
   <header class="site-header">
@@ -20,15 +215,43 @@
   <main>
     <section id="cart-area"></section>
 
-    <section id="payment" style="display:none">
-      <h2>Payment</h2>
-      <label><input type="radio" name="method" value="ewallet" checked /> E-Wallet</label>
-      <label><input type="radio" name="method" value="bank" /> Bank (QR)</label>
-
-      <div id="ewallet-form">
-        <label>Wallet ID / Email
-          <input id="wallet-id" type="text" required />
+    <section id="checkout-form" style="display:none">
+      <h2>Delivery Information</h2>
+      <div class="form-group">
+        <label>Delivery Address
+          <select id="address">
+            <option value="">Select address</option>
+            <option value="home">Home - 123 Main St, Hanoi</option>
+            <option value="office">Office - 456 Business Rd, Hanoi</option>
+            <option value="other">Other - Add new address</option>
+          </select>
         </label>
+      </div>
+      
+      <div class="form-group">
+        <label>Voucher Code</label>
+        <div class="voucher-row">
+          <div>
+            <input id="voucher" type="text" placeholder="Enter voucher code" />
+          </div>
+          <button id="apply-voucher" class="btn secondary">Apply</button>
+        </div>
+        <div id="voucher-msg" style="display:none"></div>
+      </div>
+      
+      <h2>Payment Method</h2>
+      <div class="form-group">
+        <label><input type="radio" name="method" value="cod" checked /> Cash on Delivery</label>
+        <label><input type="radio" name="method" value="ewallet" /> E-Wallet</label>
+        <label><input type="radio" name="method" value="bank" /> Bank Transfer (QR)</label>
+      </div>
+      
+      <div id="ewallet-form" style="display:none">
+        <div class="form-group">
+          <label>Wallet ID / Email
+            <input id="wallet-id" type="text" />
+          </label>
+        </div>
       </div>
 
       <div id="bank-qr" style="display:none">
@@ -37,7 +260,7 @@
       </div>
 
       <div class="actions">
-        <button id="pay" class="btn primary">Pay</button>
+        <button id="pay" class="btn primary">Place Order</button>
       </div>
     </section>
 
@@ -48,56 +271,210 @@
   <script>
     const cartArea = document.getElementById('cart-area');
     const emptyMsg = document.getElementById('empty-msg');
-    const paymentSection = document.getElementById('payment');
+    const checkoutSection = document.getElementById('checkout-form');
     const methodEls = document.querySelectorAll('input[name="method"]');
+    let discount = 0;
+    let voucherApplied = null;
 
     const renderCart = () => {
       const cart = getCart();
       cartArea.innerHTML = '';
       if (!cart || cart.length === 0) {
         emptyMsg.style.display = 'block';
-        paymentSection.style.display = 'none';
+        checkoutSection.style.display = 'none';
         return;
       }
       emptyMsg.style.display = 'none';
-      paymentSection.style.display = '';
+      checkoutSection.style.display = '';
       const products = getProducts();
-      let total = 0;
-      cart.forEach(item => {
+      
+      const cartContainer = document.createElement('div');
+      cartContainer.className = 'cart-container';
+      
+      let subtotal = 0;
+      cart.forEach((item, idx) => {
         const p = products.find(x => x.id === item.id);
         if (!p) return;
-        total += p.price * item.qty;
+        subtotal += p.price * item.qty;
+        
         const row = document.createElement('div');
-        row.className = 'cart-row';
+        row.className = 'cart-item';
+        
         const opts = item.options || {};
         const optsLabel = [];
         if (opts.size) optsLabel.push('Size: ' + escapeHtml(opts.size));
         if (opts.color) optsLabel.push('Color: ' + escapeHtml(opts.color));
-        const optsText = optsLabel.length ? ` (${optsLabel.join(', ')})` : '';
-        row.innerHTML = `${escapeHtml(p.name)}${optsText} x ${item.qty} — $${(p.price * item.qty).toFixed(2)}`;
-        cartArea.appendChild(row);
+        const optsText = optsLabel.length ? `<div class="item-options">${optsLabel.join(', ')}</div>` : '';
+        
+        row.innerHTML = `
+          <div class="item-info">
+            <h3>${escapeHtml(p.name)}</h3>
+            ${optsText}
+            <div class="item-type">Type: ${escapeHtml(p.type || 'Standard')}</div>
+            <div class="item-price">$${p.price.toFixed(2)}</div>
+          </div>
+          <div class="item-controls">
+            <div class="quantity-control">
+              <button class="qty-btn" data-idx="${idx}" data-action="minus">−</button>
+              <input type="number" class="qty-input" data-idx="${idx}" value="${item.qty}" min="1" max="99" />
+              <button class="qty-btn" data-idx="${idx}" data-action="plus">+</button>
+            </div>
+            <div class="item-total">$${(p.price * item.qty).toFixed(2)}</div>
+            <button class="btn-remove" data-idx="${idx}">Remove</button>
+          </div>
+        `;
+        cartContainer.appendChild(row);
       });
-      const totalEl = document.createElement('h3');
-      totalEl.textContent = 'Total: $' + total.toFixed(2);
-      cartArea.appendChild(totalEl);
-    }
+      
+      const summary = document.createElement('div');
+      summary.className = 'order-summary';
+      const total = subtotal - discount;
+      summary.innerHTML = `
+        <div class="summary-row">
+          <span>Subtotal:</span>
+          <span>$${subtotal.toFixed(2)}</span>
+        </div>
+        ${discount > 0 ? `
+        <div class="summary-row discount">
+          <span>Discount (${voucherApplied}):</span>
+          <span>-$${discount.toFixed(2)}</span>
+        </div>` : ''}
+        <div class="summary-row total">
+          <span>Total:</span>
+          <span>$${total.toFixed(2)}</span>
+        </div>
+      `;
+      
+      cartArea.appendChild(cartContainer);
+      cartArea.appendChild(summary);
+      attachCartEvents();
+    };
 
-    // payment method toggles
+    const attachCartEvents = () => {
+      // Quantity buttons
+      document.querySelectorAll('.qty-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const idx = parseInt(e.target.dataset.idx);
+          const action = e.target.dataset.action;
+          const cart = getCart();
+          if (action === 'plus') {
+            cart[idx].qty++;
+          } else if (action === 'minus' && cart[idx].qty > 1) {
+            cart[idx].qty--;
+          }
+          saveCart(cart);
+          renderCart();
+        });
+      });
+
+      // Quantity input
+      document.querySelectorAll('.qty-input').forEach(input => {
+        input.addEventListener('change', (e) => {
+          const idx = parseInt(e.target.dataset.idx);
+          let qty = parseInt(e.target.value);
+          if (isNaN(qty) || qty < 1) qty = 1;
+          if (qty > 99) qty = 99;
+          const cart = getCart();
+          cart[idx].qty = qty;
+          saveCart(cart);
+          renderCart();
+        });
+      });
+
+      // Remove button
+      document.querySelectorAll('.btn-remove').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const idx = parseInt(e.target.dataset.idx);
+          const cart = getCart();
+          cart.splice(idx, 1);
+          saveCart(cart);
+          updateCartCount();
+          renderCart();
+        });
+      });
+    };
+
+    // Payment method toggles
     methodEls.forEach(el => el.addEventListener('change', () => {
       const val = document.querySelector('input[name="method"]:checked').value;
-      document.getElementById('ewallet-form').style.display = val === 'ewallet' ? '' : 'none';
-      document.getElementById('bank-qr').style.display = val === 'bank' ? '' : 'none';
+      document.getElementById('ewallet-form').style.display = val === 'ewallet' ? 'block' : 'none';
+      document.getElementById('bank-qr').style.display = val === 'bank' ? 'block' : 'none';
     }));
 
+    // Apply voucher
+    let voucherError = false;
+    document.getElementById('apply-voucher').addEventListener('click', () => {
+      const code = document.getElementById('voucher').value.trim().toUpperCase();
+      const voucherMsg = document.getElementById('voucher-msg');
+      
+      if (!code) {
+        voucherMsg.style.display = 'none';
+        voucherError = false;
+        return;
+      }
+      
+      const vouchers = {
+        'SAVE10': 10,
+        'SAVE20': 20,
+        'WELCOME': 5
+      };
+      
+      if (vouchers[code]) {
+        discount = vouchers[code];
+        voucherApplied = code;
+        voucherError = false;
+        voucherMsg.textContent = `Voucher "${code}" applied! You saved ${discount}`;
+        voucherMsg.style.display = 'block';
+        voucherMsg.className = 'success-msg';
+        renderCart();
+      } else {
+        discount = 0;
+        voucherApplied = null;
+        voucherError = true;
+        voucherMsg.textContent = 'Invalid voucher code. Please remove or correct it before checkout.';
+        voucherMsg.style.display = 'block';
+        voucherMsg.className = 'error-msg';
+        renderCart();
+      }
+    });
+    
+    // Clear voucher error when input changes
+    document.getElementById('voucher').addEventListener('input', () => {
+      const code = document.getElementById('voucher').value.trim();
+      if (!code) {
+        voucherError = false;
+        discount = 0;
+        voucherApplied = null;
+        document.getElementById('voucher-msg').style.display = 'none';
+        renderCart();
+      }
+    });
+
+    // Place order
     document.getElementById('pay').addEventListener('click', () => {
+      const address = document.getElementById('address').value;
+      if (!address) {
+        return alert('Please select a delivery address');
+      }
+      
+      // Check if there's a voucher error
+      if (voucherError) {
+        return alert('Please remove or correct the invalid voucher code before placing your order');
+      }
+      
       const method = document.querySelector('input[name="method"]:checked').value;
       if (method === 'ewallet') {
         const wallet = document.getElementById('wallet-id').value.trim();
         if (!wallet) return alert('Enter wallet ID or email');
       }
-      // Simulate payment success
-      alert('Payment successful');
+      
+      alert('Order placed successfully! Your order will be delivered soon.');
       saveCart([]);
+      discount = 0;
+      voucherApplied = null;
+      voucherError = false;
+      document.getElementById('voucher').value = '';
+      document.getElementById('voucher-msg').style.display = 'none';
       updateCartCount();
       renderCart();
     });
