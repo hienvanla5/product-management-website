@@ -156,7 +156,7 @@
         validator: function(v) { 
             const t = v.trim(); 
             if (t.length === 0) return setError(this, 'Colors are required');
-            if (!REGEX_STRICT_LIST.test(t)) return setError(this, 'Invalid format (e.g. Red, Blue)');
+            if (!REGEX_STRICT_LIST.test(t)) return setError(this, 'Invalid Color format');
             return true; 
         }, msg: '', touched: false
       },
@@ -165,7 +165,7 @@
         validator: function(v) { 
             const t = v.trim(); 
             if (t.length === 0) return setError(this, 'Sizes are required');
-            if (!REGEX_STRICT_LIST.test(t)) return setError(this, 'Invalid format (e.g. S, M)');
+            if (!REGEX_STRICT_LIST.test(t)) return setError(this, 'Invalid Size format');
             return true; 
         }, msg: '', touched: false
       },
