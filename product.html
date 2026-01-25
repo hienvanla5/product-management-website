@@ -3,112 +3,318 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Product Detail</title>
+  <title>Add Product</title>
   <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* CSS hiển thị lỗi */
+    .error-msg { color: red; font-size: 0.85em; margin-top: 4px; display: none; }
+    .input-error { border: 1px solid red; background-color: #fff0f0; }
+    button { margin-top: 20px; padding: 10px 20px; cursor: pointer; }
+    button:disabled { background-color: #ccc; cursor: not-allowed; }
+  </style>
 </head>
 <body>
   <header class="site-header">
-    <h1>Product</h1>
+    <h1>Add Product</h1>
     <nav>
       <a href="index.html">Home</a>
       <a href="add-product.html">Add Product</a>
       <a href="checkout.html">Checkout (<span id="cart-count">0</span>)</a>
-      <span id="user-area"></span>
     </nav>
   </header>
 
   <main>
-    <div id="product-detail"></div>
+    <form id="addForm" class="multistep" novalidate>
+      <div class="step">
+        <h2>Product Info</h2>
+        
+        <label>Product Name (Max 50 chars)</label>
+        <input name="name" id="name" type="text" required />
+        <div id="name-error" class="error-msg"></div>
+
+        <label>Brand (Max 50 chars)</label>
+        <input name="brand" id="brand" type="text" required />
+        <div id="brand-error" class="error-msg"></div>
+
+        <label>Category (Max 50 chars)</label>
+        <input name="category" id="category" type="text" required />
+        <div id="category-error" class="error-msg"></div>
+
+        <label>Price (Numeric > 0)</label>
+        <input name="price" id="price" type="number" step="0.01" required />
+        <div id="price-error" class="error-msg"></div>
+
+        <label>Description (Max 255 chars, no &lt; &gt;)</label>
+        <textarea name="description" id="description" rows="4"></textarea>
+        <div id="description-error" class="error-msg"></div>
+
+        <label>Colors (e.g. Red, Blue)</label>
+        <input name="colors" id="colors" type="text" placeholder="Red, Blue" />
+        <div id="colors-error" class="error-msg"></div> 
+
+        <label>Sizes (e.g. S, M)</label>
+        <input name="sizes" id="sizes" type="text" placeholder="S, M, L" />
+        <div id="sizes-error" class="error-msg"></div> 
+
+        <label>Image URL</label>
+        <input name="image" id="image" type="url" />
+        <div id="image-error" class="error-msg"></div>
+
+        <div class="actions">
+          <button type="submit" id="submit" class="btn primary">Add Product</button>
+        </div>
+      </div>
+    </form>
   </main>
 
   <script src="js/app.js"></script>
+  
   <script>
-    const qs = new URLSearchParams(location.search);
-    const id = qs.get('id');
-    const container = document.getElementById('product-detail');
-    if(!id){ container.innerHTML = '<p>Product not found.</p>'; }
-    const products = getProducts();
-    const product = products.find(p=>p.id===id);
-    if(!product){ container.innerHTML = '<p>Product not found.</p>'; }
+    // --- CẤU HÌNH REGEX ---
+    
+    // 1. Text thường: Chữ, số, khoảng trắng (Dùng cho Name, Brand, Category)
+    // Chặn ký tự đặc biệt như @, #, <, >, ...
+    const REGEX_TEXT_STRICT = /^[a-zA-Z0-9\s\u00C0-\u1EF9]+$/; 
 
-    const render = () => {
-      container.innerHTML = `
-        <div class="card" data-id="${product.id}" data-name="${escapeHtml(product.name)}" data-brand="${escapeHtml(product.brand || '')}" data-category="${escapeHtml(product.category || '')}" data-price="${Number(product.price).toFixed(2)}" data-description="${escapeHtml(product.description || '')}" data-colors="${(product.colors||[]).join(',')}" data-sizes="${(product.sizes||[]).join(',')}" data-image="${escapeHtml(product.image || '')}">
-          <img src="${product.image || 'https://via.placeholder.com/600x400?text=Product'}" alt="${escapeHtml(product.name)}" style="height:300px;object-fit:cover;"/>
-          <h2>${escapeHtml(product.name)}</h2>
-          <p class="meta">Brand: ${escapeHtml(product.brand || '')} &nbsp; Category: ${escapeHtml(product.category || '')}</p>
-          <p class="price">$${Number(product.price).toFixed(2)}</p>
-          <p>${escapeHtml(product.description || '')}</p>
+    // 2. Description: Cho phép viết tự do nhưng CẤM TUYỆT ĐỐI dấu < và >
+    const REGEX_NO_TAGS = /^[^<>]+$/;
 
-          <label>Size
-            <select id="opt-size">
-              <option value="">Select size</option>
-              ${ (product.sizes && product.sizes.length) ? product.sizes.map(s=>`<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('') : `
-              <option value="S">S</option>
-              <option value="M">M</option>
-              <option value="L">L</option>
-              <option value="XL">XL</option>`}
-            </select>
-          </label>
+    // 3. List (Colors/Sizes): Định dạng "Từ, Từ"
+    const REGEX_STRICT_LIST = /^[a-zA-Z0-9\u00C0-\u1EF9]+(,\s*[a-zA-Z0-9\u00C0-\u1EF9]+)*$/;
+    
+    // 4. Image URL
+    const REGEX_IMAGE = /^(http|https):\/\/[^ "]+(\.(jpg|png|jpeg|gif|webp))$/i;
 
-          <label>Color
-            <select id="opt-color">
-              <option value="">Select color</option>
-              ${ (product.colors && product.colors.length) ? product.colors.map(c=>`<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('') : `
-              <option value="Red">Red</option>
-              <option value="Blue">Blue</option>
-              <option value="Green">Green</option>`}
-            </select>
-          </label>
 
-          <label>Quantity
-            <input id="opt-qty" type="number" min="1" value="1" />
-          </label>
+    const addForm = document.getElementById('addForm');
 
-          <div class="actions">
-            <button id="add-cart" class="btn">Add to cart</button>
-            <button id="buy-now" class="btn primary">Buy Now</button>
-          </div>
-        </div>
-      `;
-
-      const size = document.getElementById('opt-size');
-      const color = document.getElementById('opt-color');
-      const qty = document.getElementById('opt-qty');
-      const addBtn = document.getElementById('add-cart');
-      const buyBtn = document.getElementById('buy-now');
-
-      const validate = () => {
-        const okQty = Number(qty.value) >= 1;
-        const sizeRequired = product.sizes && product.sizes.length;
-        const colorRequired = product.colors && product.colors.length;
-        const okSize = !sizeRequired || (size && size.value);
-        const okColor = !colorRequired || (color && color.value);
-        const ok = okQty && okSize && okColor;
-        addBtn.disabled = !ok;
-        buyBtn.disabled = !ok;
-      }
-      // initial
-      validate();
-      size.addEventListener('change', validate);
-      color.addEventListener('change', validate);
-      qty.addEventListener('input', validate);
-
-      addBtn.addEventListener('click', ()=>{
-        addToCart(product.id, Number(qty.value), {size:size.value, color:color.value});
-        updateCartCount();
-        alert('Added to cart');
-      });
-
-      buyBtn.addEventListener('click', ()=>{
-        // replace cart with only this item and go to checkout
-        saveCart([{id:product.id, qty:Number(qty.value), options:{size:size.value, color:color.value}}]);
-        updateCartCount();
-        location.href = 'checkout.html';
-      });
+    // Hàm hỗ trợ gán lỗi động
+    function setError(fieldObj, message) {
+        fieldObj.msg = message;
+        return false; // Trả về false nghĩa là Validate thất bại
     }
 
-    if (product) render();
+    /* CẤU TRÚC VALIDATOR MỚI:
+       - Kiểm tra rỗng (Trim length == 0)
+       - Kiểm tra độ dài (Length > Max) -> Báo lỗi đỏ, chặn bước sau
+       - Kiểm tra ký tự cấm (Regex) -> Báo lỗi đỏ, chặn bước sau
+    */
+    const fields = [
+      {
+        id: 'name', el: document.getElementById('name'), required: true, 
+        validator: function(v) { 
+            const t = v.trim();
+            if (t.length === 0) return setError(this, 'Name is required');
+            if (t.length > 50) return setError(this, 'Name too long (Max 50 chars)');
+            if (!REGEX_TEXT_STRICT.test(t)) return setError(this, 'Name contains special characters (@, <, >, etc.)');
+            return true; 
+        }, 
+        msg: '', touched: false
+      },
+      {
+        id: 'brand', el: document.getElementById('brand'), required: true, 
+        validator: function(v) { 
+            const t = v.trim();
+            if (t.length === 0) return setError(this, 'Brand is required');
+            if (t.length > 50) return setError(this, 'Brand too long (Max 50 chars)');
+            if (!REGEX_TEXT_STRICT.test(t)) return setError(this, 'Brand contains special characters');
+            return true; 
+        }, 
+        msg: '', touched: false
+      },
+      {
+        id: 'category', el: document.getElementById('category'), required: true, 
+        validator: function(v) { 
+            const t = v.trim();
+            if (t.length === 0) return setError(this, 'Category is required');
+            if (t.length > 50) return setError(this, 'Category too long (Max 50 chars)');
+            if (!REGEX_TEXT_STRICT.test(t)) return setError(this, 'Category contains special characters');
+            return true; 
+        }, 
+        msg: '', touched: false
+      },
+      {
+        id: 'price', el: document.getElementById('price'), required: true, 
+        validator: function(v) {
+            if (v === '') return setError(this, 'Price is required');
+            if (isNaN(Number(v))) return setError(this, 'Price must be numeric');
+            if (Number(v) <= 0) return setError(this, 'Price must be positive');
+            return true;
+        }, 
+        msg: '', touched: false
+      },
+      {
+        id: 'description', el: document.getElementById('description'), required: true, 
+        validator: function(v) { 
+            const t = v.trim();
+            if (t.length === 0) return setError(this, 'Description is required');
+            
+            // YÊU CẦU CỦA BẠN: Cho nhập quá, nhưng báo lỗi
+            if (t.length > 255) return setError(this, 'Description too long (Max 255 chars)'); 
+            
+            // YÊU CẦU CỦA BẠN: Chặn ký tự đặc biệt như < >
+            if (!REGEX_NO_TAGS.test(t)) return setError(this, 'Description cannot contain < or >');
+            
+            return true; 
+        }, 
+        msg: '', touched: false
+      },
+      {
+        id: 'colors', el: document.getElementById('colors'), required: true, 
+        validator: function(v) { 
+            const t = v.trim(); 
+            if (t.length === 0) return setError(this, 'Colors are required');
+            if (!REGEX_STRICT_LIST.test(t)) return setError(this, 'Invalid format (e.g. Red, Blue)');
+            return true; 
+        }, 
+        msg: '', touched: false
+      },
+      {
+        id: 'sizes', el: document.getElementById('sizes'), required: true, 
+        validator: function(v) { 
+            const t = v.trim(); 
+            if (t.length === 0) return setError(this, 'Sizes are required');
+            if (!REGEX_STRICT_LIST.test(t)) return setError(this, 'Invalid format (e.g. S, M)');
+            return true; 
+        }, 
+        msg: '', touched: false
+      },
+      {
+        id: 'image', el: document.getElementById('image'), required: true, 
+        validator: function(v) {
+            const t = v.trim();
+            if (t.length === 0) return setError(this, 'Image URL is required');
+            if (!REGEX_IMAGE.test(t)) return setError(this, 'Invalid Image URL (must end with .jpg, .png...)');
+            return true;
+        }, 
+        msg: '', touched: false
+      }
+    ];
+
+    // --- CÁC HÀM XỬ LÝ GIAO DIỆN (GIỮ NGUYÊN LOGIC) ---
+    function getErrorEl(id){ return document.getElementById(id+'-error'); }
+
+    function isFieldValid(field){
+      const val = (field.el && field.el.value !== undefined) ? String(field.el.value) : '';
+      // Gọi validator với 'this' là đối tượng field để hàm setError hoạt động
+      return field.required ? !!field.validator.call(field, val) : true;
+    }
+
+    function showError(field){
+      if(!field.el) return;
+      field.el.classList.add('input-error');
+      const errEl = getErrorEl(field.id);
+      if(errEl){ 
+          errEl.style.display = 'block'; 
+          errEl.textContent = field.msg; // Hiển thị nội dung lỗi động
+      }
+    }
+
+    function hideError(field){
+      if(!field.el) return;
+      field.el.classList.remove('input-error');
+      const errEl = getErrorEl(field.id);
+      if(errEl){ errEl.style.display = 'none'; }
+    }
+
+    function validateFieldDisplay(field){
+      const ok = isFieldValid(field);
+      // Chỉ hiện lỗi khi đã chạm vào (touched) và không hợp lệ
+      if(field.touched && !ok) showError(field); else hideError(field);
+      return ok;
+    }
+
+    // --- LOGIC TUẦN TỰ (QUAN TRỌNG) ---
+    function updateStates(){
+      let prevAllValid = true;
+      for(let i=0; i<fields.length; i++){
+        const f = fields[i];
+        
+        // 1. Nếu các trường trước đó có lỗi -> Khóa trường hiện tại
+        if(!prevAllValid){ 
+            if(f.el) f.el.disabled = true; 
+        } else { 
+            if(f.el) f.el.disabled = false; 
+        }
+        
+        // 2. Kiểm tra trường hiện tại để quyết định cho vòng lặp sau
+        if(f.required){
+          // Nếu trường hiện tại sai (Vd: Quá dài, hoặc chứa < >) -> prevAllValid = false
+          // Điều này sẽ khiến trường tiếp theo bị khóa ngay lập tức
+          if(!isFieldValid(f)) prevAllValid = false;
+        }
+        
+        // 3. Cập nhật hiển thị đỏ/xanh
+        validateFieldDisplay(f);
+      }
+      
+      // Khóa nút Submit nếu còn bất kỳ lỗi nào
+      const allReqOk = fields.filter(f=>f.required).every(f => isFieldValid(f));
+      const submitBtn = document.getElementById('submit');
+      if(submitBtn) submitBtn.disabled = !allReqOk;
+    }
+
+    // --- GẮN SỰ KIỆN ---
+    fields.forEach(f=>{
+      if(!f.el) return;
+      // Khi tab ra ngoài
+      f.el.addEventListener('blur', ()=>{ f.touched = true; validateFieldDisplay(f); updateStates(); });
+      // Khi gõ phím (Real-time check)
+      f.el.addEventListener('input', ()=>{ 
+          // Nếu đã từng chạm vào thì hiện lỗi ngay
+          if(f.touched) validateFieldDisplay(f); 
+          // Luôn cập nhật trạng thái khóa/mở các ô bên dưới
+          updateStates(); 
+      });
+    });
+
+    // Chạy lần đầu
+    updateStates();
+
+    // --- SUBMIT FORM ---
+    addForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      let allValid = true;
+      fields.filter(f=>f.required).forEach(f=>{ 
+        f.touched = true; 
+        if(!isFieldValid(f)) allValid = false; 
+      });
+      
+      if(!allValid) {
+          updateStates();
+          return;
+      }
+
+      // Lấy dữ liệu
+      const product = {
+        id: Date.now().toString(),
+        name: document.getElementById('name').value.trim(),
+        brand: document.getElementById('brand').value.trim(),
+        category: document.getElementById('category').value.trim(),
+        price: Number(document.getElementById('price').value),
+        description: document.getElementById('description').value.trim(),
+        colors: document.getElementById('colors').value.split(',').map(s=>s.trim()).filter(Boolean),
+        sizes: document.getElementById('sizes').value.split(',').map(s=>s.trim()).filter(Boolean),
+        image: document.getElementById('image').value.trim(),
+      };
+
+      try {
+        // Giả lập lưu dữ liệu (Cần file js/app.js chứa hàm getProducts/saveProducts)
+        const products = typeof getProducts === 'function' ? getProducts() : [];
+        products.unshift(product);
+        if (typeof saveProducts === 'function') { 
+            saveProducts(products); 
+        } else { 
+            localStorage.setItem('products', JSON.stringify(products)); 
+        }
+        
+        alert('Product added successfully!');
+        window.location.href = 'index.html';
+      } catch (err) {
+        alert('Error: ' + err.message);
+      }
+    });
   </script>
 </body>
 </html>
