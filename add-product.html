@@ -17,7 +17,7 @@
         opacity: 0.7;
     }
     
-    /* Hiệu ứng khi focus để người dùng biết đang nhập ở đâu */
+    /* Hiệu ứng khi focus */
     input:focus, textarea:focus {
         border-color: #007bff;
         outline: none;
@@ -59,7 +59,7 @@
         <input name="price" id="price" type="number" step="0.01" required />
         <div id="price-error" class="error-msg"></div>
 
-        <label>Description (Max 255 chars, no &lt; &gt;)</label>
+        <label>Description (Max 255 chars, No special chars @#$%)</label>
         <textarea name="description" id="description" rows="4"></textarea>
         <div id="description-error" class="error-msg"></div>
 
@@ -86,9 +86,17 @@
   
   <script>
     // --- CẤU HÌNH REGEX ---
+    // 1. Chỉ cho phép chữ, số, khoảng trắng và tiếng Việt (Dùng cho Name, Brand, Category)
     const REGEX_TEXT_STRICT = /^[a-zA-Z0-9\s\u00C0-\u1EF9]+$/; 
-    const REGEX_NO_TAGS = /^[^<>]+$/;
+    
+    // 2. MỚI: Description an toàn (Cho phép chữ, số, tiếng Việt và dấu .,-) 
+    // KHÔNG cho phép: @ # $ % ^ & * ( ) < > / \ |
+    const REGEX_DESC_SAFE = /^[a-zA-Z0-9\s\u00C0-\u1EF9.,-]+$/;
+
+    // 3. Danh sách (Colors, Sizes)
     const REGEX_STRICT_LIST = /^[a-zA-Z0-9\u00C0-\u1EF9]+(,\s*[a-zA-Z0-9\u00C0-\u1EF9]+)*$/;
+    
+    // 4. URL Hình ảnh
     const REGEX_IMAGE = /^(http|https):\/\/[^ "]+(\.(jpg|png|jpeg|gif|webp))$/i;
 
     const addForm = document.getElementById('addForm');
@@ -98,7 +106,6 @@
         return false;
     }
 
-    // Cấu hình các trường (Thêm lại thuộc tính touched: false)
     const fields = [
       {
         id: 'name', el: document.getElementById('name'), required: true, touched: false,
@@ -146,7 +153,10 @@
             const t = v.trim();
             if (t === '') return setError(this, 'Description is required');
             if (t.length > 255) return setError(this, 'Description too long (Max 255 chars)'); 
-            if (!REGEX_NO_TAGS.test(t)) return setError(this, 'Description cannot contain < or >');
+            
+            // SỬA: Dùng Regex chặt chẽ hơn để cấm ký tự đặc biệt
+            if (!REGEX_DESC_SAFE.test(t)) return setError(this, 'Description contains special characters');
+            
             return true; 
         }, msg: ''
       },
@@ -181,13 +191,11 @@
 
     function getErrorEl(id){ return document.getElementById(id+'-error'); }
 
-    // Hàm kiểm tra hợp lệ (trả về true/false)
     function isFieldValid(field){
       const val = (field.el && field.el.value !== undefined) ? String(field.el.value) : '';
       return field.required ? !!field.validator.call(field, val) : true;
     }
 
-    // Hàm hiển thị lỗi
     function showError(field){
       if(!field.el) return;
       field.el.classList.add('input-error');
@@ -198,7 +206,6 @@
       }
     }
 
-    // Hàm ẩn lỗi
     function hideError(field){
       if(!field.el) return;
       field.el.classList.remove('input-error');
@@ -206,8 +213,6 @@
       if(errEl){ errEl.style.display = 'none'; }
     }
 
-    // QUAN TRỌNG: Logic hiển thị lỗi
-    // Chỉ hiện lỗi khi field.touched = true (đã Blur/Tab đi) VÀ dữ liệu không hợp lệ
     function validateFieldDisplay(field){
       const ok = isFieldValid(field);
       if(field.touched && !ok) {
@@ -218,74 +223,62 @@
       return ok;
     }
 
-    // QUAN TRỌNG: Logic cập nhật trạng thái Disable/Enable các ô tiếp theo
     function updateStates(){
-      let prevAllValid = true; // Biến cờ: các ô trước đó đã ok chưa?
+      let prevAllValid = true;
 
       for(let i=0; i<fields.length; i++){
         const f = fields[i];
         
-        // 1. Xử lý khóa/mở ô input
+        // 1. Logic khóa ô input
         if(!prevAllValid){ 
-            // Nếu các ô trước chưa xong -> Khóa ô này lại
             if(f.el) f.el.disabled = true;
         } else { 
-            // Nếu các ô trước đã ngon -> Mở ô này ra để nhập
             if(f.el) f.el.disabled = false;
         }
         
-        // 2. Kiểm tra tính hợp lệ của ô hiện tại để quyết định cho ô sau hay không
-        // Lưu ý: Dù chưa hiện lỗi đỏ (do chưa touched), nhưng nếu dữ liệu sai 
-        // thì vẫn tính là prevAllValid = false để khóa ô sau.
+        // 2. Logic tuần tự
         if(f.required){
           if(!isFieldValid(f)) {
               prevAllValid = false; 
           }
         }
         
-        // 3. Cập nhật hiển thị (Đỏ hay không đỏ)
+        // 3. Logic hiển thị
         validateFieldDisplay(f);
       }
       
-      // Khóa nút Submit nếu chưa xong hết
       const allReqOk = fields.filter(f=>f.required).every(f => isFieldValid(f));
       const submitBtn = document.getElementById('submit');
       if(submitBtn) submitBtn.disabled = !allReqOk;
     }
 
-    // Gán sự kiện
     fields.forEach(f=>{
       if(!f.el) return;
       
-      // Sự kiện BLUR (Tab đi): Đánh dấu đã touched -> Kiểm tra hiển thị lỗi
+      // BLUR: Đánh dấu đã xem -> Check lỗi đỏ
       f.el.addEventListener('blur', ()=>{ 
           f.touched = true; 
           updateStates(); 
       });
       
-      // Sự kiện INPUT (Đang gõ): 
-      // Nếu đang đỏ mà gõ đúng thì xanh lại ngay.
-      // Nếu chưa đỏ thì cứ gõ thoải mái.
+      // INPUT: Đang gõ -> Chỉ check logic mở khóa (chưa hiện đỏ nếu chưa touched)
       f.el.addEventListener('input', ()=>{ 
           updateStates(); 
       });
     });
 
-    // Chạy lần đầu để khóa các ô dưới (trừ Name)
     updateStates();
 
-    // Xử lý Submit
     addForm.addEventListener('submit', (e) => {
       e.preventDefault();
       
       let allValid = true;
-      // Khi nhấn Submit, đánh dấu tất cả là touched để hiện lỗi nếu có
       fields.filter(f=>f.required).forEach(f=>{ 
         f.touched = true; 
         if(!isFieldValid(f)) allValid = false; 
       });
       
-      updateStates(); // Cập nhật lại giao diện (hiện đỏ hết các chỗ sai)
+      updateStates();
 
       if(!allValid) return;
 
