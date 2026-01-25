@@ -9,6 +9,14 @@
     /* CSS hiển thị lỗi */
     .error-msg { color: red; font-size: 0.85em; margin-top: 4px; display: none; }
     .input-error { border: 1px solid red; background-color: #fff0f0; }
+    
+    /* Làm mờ ô input khi bị Disabled để dễ nhận biết */
+    input:disabled, textarea:disabled {
+        background-color: #e0e0e0;
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+    
     button { margin-top: 20px; padding: 10px 20px; cursor: pointer; }
     button:disabled { background-color: #ccc; cursor: not-allowed; }
   </style>
@@ -71,34 +79,22 @@
   
   <script>
     // --- CẤU HÌNH REGEX ---
-    
-    // 1. Text thường: Chữ, số, khoảng trắng (Dùng cho Name, Brand, Category)
-    // Chặn ký tự đặc biệt như @, #, <, >, ...
     const REGEX_TEXT_STRICT = /^[a-zA-Z0-9\s\u00C0-\u1EF9]+$/; 
-
-    // 2. Description: Cho phép viết tự do nhưng CẤM TUYỆT ĐỐI dấu < và >
+    
+    // Regex chặn < và > (Dùng cho Description)
+    // Ý nghĩa: Chuỗi chỉ được chứa các ký tự KHÔNG PHẢI < hoặc >
     const REGEX_NO_TAGS = /^[^<>]+$/;
 
-    // 3. List (Colors/Sizes): Định dạng "Từ, Từ"
     const REGEX_STRICT_LIST = /^[a-zA-Z0-9\u00C0-\u1EF9]+(,\s*[a-zA-Z0-9\u00C0-\u1EF9]+)*$/;
-    
-    // 4. Image URL
     const REGEX_IMAGE = /^(http|https):\/\/[^ "]+(\.(jpg|png|jpeg|gif|webp))$/i;
-
 
     const addForm = document.getElementById('addForm');
 
-    // Hàm hỗ trợ gán lỗi động
     function setError(fieldObj, message) {
         fieldObj.msg = message;
-        return false; // Trả về false nghĩa là Validate thất bại
+        return false;
     }
 
-    /* CẤU TRÚC VALIDATOR MỚI:
-       - Kiểm tra rỗng (Trim length == 0)
-       - Kiểm tra độ dài (Length > Max) -> Báo lỗi đỏ, chặn bước sau
-       - Kiểm tra ký tự cấm (Regex) -> Báo lỗi đỏ, chặn bước sau
-    */
     const fields = [
       {
         id: 'name', el: document.getElementById('name'), required: true, 
@@ -106,10 +102,9 @@
             const t = v.trim();
             if (t.length === 0) return setError(this, 'Name is required');
             if (t.length > 50) return setError(this, 'Name too long (Max 50 chars)');
-            if (!REGEX_TEXT_STRICT.test(t)) return setError(this, 'Name contains special characters (@, <, >, etc.)');
+            if (!REGEX_TEXT_STRICT.test(t)) return setError(this, 'Name contains special characters');
             return true; 
-        }, 
-        msg: '', touched: false
+        }, msg: '', touched: false
       },
       {
         id: 'brand', el: document.getElementById('brand'), required: true, 
@@ -119,8 +114,7 @@
             if (t.length > 50) return setError(this, 'Brand too long (Max 50 chars)');
             if (!REGEX_TEXT_STRICT.test(t)) return setError(this, 'Brand contains special characters');
             return true; 
-        }, 
-        msg: '', touched: false
+        }, msg: '', touched: false
       },
       {
         id: 'category', el: document.getElementById('category'), required: true, 
@@ -130,8 +124,7 @@
             if (t.length > 50) return setError(this, 'Category too long (Max 50 chars)');
             if (!REGEX_TEXT_STRICT.test(t)) return setError(this, 'Category contains special characters');
             return true; 
-        }, 
-        msg: '', touched: false
+        }, msg: '', touched: false
       },
       {
         id: 'price', el: document.getElementById('price'), required: true, 
@@ -140,24 +133,23 @@
             if (isNaN(Number(v))) return setError(this, 'Price must be numeric');
             if (Number(v) <= 0) return setError(this, 'Price must be positive');
             return true;
-        }, 
-        msg: '', touched: false
+        }, msg: '', touched: false
       },
       {
         id: 'description', el: document.getElementById('description'), required: true, 
         validator: function(v) { 
             const t = v.trim();
+            // 1. Kiểm tra rỗng đầu tiên
             if (t.length === 0) return setError(this, 'Description is required');
             
-            // YÊU CẦU CỦA BẠN: Cho nhập quá, nhưng báo lỗi
+            // 2. Kiểm tra độ dài
             if (t.length > 255) return setError(this, 'Description too long (Max 255 chars)'); 
             
-            // YÊU CẦU CỦA BẠN: Chặn ký tự đặc biệt như < >
+            // 3. Kiểm tra ký tự cấm (nếu không rỗng)
             if (!REGEX_NO_TAGS.test(t)) return setError(this, 'Description cannot contain < or >');
             
             return true; 
-        }, 
-        msg: '', touched: false
+        }, msg: '', touched: false
       },
       {
         id: 'colors', el: document.getElementById('colors'), required: true, 
@@ -166,8 +158,7 @@
             if (t.length === 0) return setError(this, 'Colors are required');
             if (!REGEX_STRICT_LIST.test(t)) return setError(this, 'Invalid format (e.g. Red, Blue)');
             return true; 
-        }, 
-        msg: '', touched: false
+        }, msg: '', touched: false
       },
       {
         id: 'sizes', el: document.getElementById('sizes'), required: true, 
@@ -176,27 +167,23 @@
             if (t.length === 0) return setError(this, 'Sizes are required');
             if (!REGEX_STRICT_LIST.test(t)) return setError(this, 'Invalid format (e.g. S, M)');
             return true; 
-        }, 
-        msg: '', touched: false
+        }, msg: '', touched: false
       },
       {
         id: 'image', el: document.getElementById('image'), required: true, 
         validator: function(v) {
             const t = v.trim();
             if (t.length === 0) return setError(this, 'Image URL is required');
-            if (!REGEX_IMAGE.test(t)) return setError(this, 'Invalid Image URL (must end with .jpg, .png...)');
+            if (!REGEX_IMAGE.test(t)) return setError(this, 'Invalid Image URL (.jpg, .png...)');
             return true;
-        }, 
-        msg: '', touched: false
+        }, msg: '', touched: false
       }
     ];
 
-    // --- CÁC HÀM XỬ LÝ GIAO DIỆN (GIỮ NGUYÊN LOGIC) ---
     function getErrorEl(id){ return document.getElementById(id+'-error'); }
 
     function isFieldValid(field){
       const val = (field.el && field.el.value !== undefined) ? String(field.el.value) : '';
-      // Gọi validator với 'this' là đối tượng field để hàm setError hoạt động
       return field.required ? !!field.validator.call(field, val) : true;
     }
 
@@ -206,7 +193,7 @@
       const errEl = getErrorEl(field.id);
       if(errEl){ 
           errEl.style.display = 'block'; 
-          errEl.textContent = field.msg; // Hiển thị nội dung lỗi động
+          errEl.textContent = field.msg; 
       }
     }
 
@@ -219,59 +206,49 @@
 
     function validateFieldDisplay(field){
       const ok = isFieldValid(field);
-      // Chỉ hiện lỗi khi đã chạm vào (touched) và không hợp lệ
       if(field.touched && !ok) showError(field); else hideError(field);
       return ok;
     }
 
-    // --- LOGIC TUẦN TỰ (QUAN TRỌNG) ---
     function updateStates(){
       let prevAllValid = true;
       for(let i=0; i<fields.length; i++){
         const f = fields[i];
         
-        // 1. Nếu các trường trước đó có lỗi -> Khóa trường hiện tại
+        // --- LOGIC KHÓA Ô TIẾP THEO ---
         if(!prevAllValid){ 
-            if(f.el) f.el.disabled = true; 
+            if(f.el) f.el.disabled = true; // Khóa nếu ô trước lỗi
         } else { 
-            if(f.el) f.el.disabled = false; 
+            if(f.el) f.el.disabled = false; // Mở nếu ô trước ok
         }
         
-        // 2. Kiểm tra trường hiện tại để quyết định cho vòng lặp sau
+        // Kiểm tra xem ô hiện tại có hợp lệ không
+        // Nếu ô Description đang Blank (Rỗng) -> isFieldValid trả về False -> prevAllValid thành False
+        // -> Vòng lặp tiếp theo (Colors) sẽ bị Disabled ngay lập tức.
         if(f.required){
-          // Nếu trường hiện tại sai (Vd: Quá dài, hoặc chứa < >) -> prevAllValid = false
-          // Điều này sẽ khiến trường tiếp theo bị khóa ngay lập tức
           if(!isFieldValid(f)) prevAllValid = false;
         }
         
-        // 3. Cập nhật hiển thị đỏ/xanh
         validateFieldDisplay(f);
       }
       
-      // Khóa nút Submit nếu còn bất kỳ lỗi nào
       const allReqOk = fields.filter(f=>f.required).every(f => isFieldValid(f));
       const submitBtn = document.getElementById('submit');
       if(submitBtn) submitBtn.disabled = !allReqOk;
     }
 
-    // --- GẮN SỰ KIỆN ---
     fields.forEach(f=>{
       if(!f.el) return;
-      // Khi tab ra ngoài
       f.el.addEventListener('blur', ()=>{ f.touched = true; validateFieldDisplay(f); updateStates(); });
-      // Khi gõ phím (Real-time check)
       f.el.addEventListener('input', ()=>{ 
-          // Nếu đã từng chạm vào thì hiện lỗi ngay
+          // Khi gõ, nếu đã touched thì hiện lỗi ngay
           if(f.touched) validateFieldDisplay(f); 
-          // Luôn cập nhật trạng thái khóa/mở các ô bên dưới
           updateStates(); 
       });
     });
 
-    // Chạy lần đầu
     updateStates();
 
-    // --- SUBMIT FORM ---
     addForm.addEventListener('submit', (e) => {
       e.preventDefault();
       
@@ -286,7 +263,7 @@
           return;
       }
 
-      // Lấy dữ liệu
+      // ... (Phần logic lưu dữ liệu giữ nguyên)
       const product = {
         id: Date.now().toString(),
         name: document.getElementById('name').value.trim(),
@@ -298,22 +275,15 @@
         sizes: document.getElementById('sizes').value.split(',').map(s=>s.trim()).filter(Boolean),
         image: document.getElementById('image').value.trim(),
       };
-
+      
       try {
-        // Giả lập lưu dữ liệu (Cần file js/app.js chứa hàm getProducts/saveProducts)
         const products = typeof getProducts === 'function' ? getProducts() : [];
         products.unshift(product);
-        if (typeof saveProducts === 'function') { 
-            saveProducts(products); 
-        } else { 
-            localStorage.setItem('products', JSON.stringify(products)); 
-        }
-        
+        if (typeof saveProducts === 'function') { saveProducts(products); } 
+        else { localStorage.setItem('products', JSON.stringify(products)); }
         alert('Product added successfully!');
         window.location.href = 'index.html';
-      } catch (err) {
-        alert('Error: ' + err.message);
-      }
+      } catch (err) { alert('Error: ' + err.message); }
     });
   </script>
 </body>
