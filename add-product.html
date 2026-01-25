@@ -100,7 +100,7 @@
         id: 'name', el: document.getElementById('name'), required: true, 
         validator: function(v) { 
             const t = v.trim();
-            if (t.length === 0) return setError(this, 'Name is required');
+            if (t === '') return setError(this, 'Name is required');
             if (t.length > 50) return setError(this, 'Name too long (Max 50 chars)');
             if (!REGEX_TEXT_STRICT.test(t)) return setError(this, 'Name contains special characters');
             return true; 
@@ -110,7 +110,7 @@
         id: 'brand', el: document.getElementById('brand'), required: true, 
         validator: function(v) { 
             const t = v.trim();
-            if (t.length === 0) return setError(this, 'Brand is required');
+            if (t === '') return setError(this, 'Brand is required');
             if (t.length > 50) return setError(this, 'Brand too long (Max 50 chars)');
             if (!REGEX_TEXT_STRICT.test(t)) return setError(this, 'Brand contains special characters');
             return true; 
@@ -120,7 +120,7 @@
         id: 'category', el: document.getElementById('category'), required: true, 
         validator: function(v) { 
             const t = v.trim();
-            if (t.length === 0) return setError(this, 'Category is required');
+            if (t === '') return setError(this, 'Category is required');
             if (t.length > 50) return setError(this, 'Category too long (Max 50 chars)');
             if (!REGEX_TEXT_STRICT.test(t)) return setError(this, 'Category contains special characters');
             return true; 
@@ -140,7 +140,7 @@
         validator: function(v) { 
             const t = v.trim();
             // 1. Kiểm tra rỗng đầu tiên
-            if (t.length === 0) return setError(this, 'Description is required');
+            if (t === '') return setError(this, 'Description is required');
             
             // 2. Kiểm tra độ dài
             if (t.length > 255) return setError(this, 'Description too long (Max 255 chars)'); 
@@ -155,7 +155,7 @@
         id: 'colors', el: document.getElementById('colors'), required: true, 
         validator: function(v) { 
             const t = v.trim(); 
-            if (t.length === 0) return setError(this, 'Colors are required');
+            if (t === '') return setError(this, 'Colors are required');
             if (!REGEX_STRICT_LIST.test(t)) return setError(this, 'Invalid Color format');
             return true; 
         }, msg: '', touched: false
@@ -164,7 +164,7 @@
         id: 'sizes', el: document.getElementById('sizes'), required: true, 
         validator: function(v) { 
             const t = v.trim(); 
-            if (t.length === 0) return setError(this, 'Sizes are required');
+            if (t === '') return setError(this, 'Sizes are required');
             if (!REGEX_STRICT_LIST.test(t)) return setError(this, 'Invalid Size format');
             return true; 
         }, msg: '', touched: false
@@ -173,7 +173,7 @@
         id: 'image', el: document.getElementById('image'), required: true, 
         validator: function(v) {
             const t = v.trim();
-            if (t.length === 0) return setError(this, 'Image URL is required');
+            if (t === '') return setError(this, 'Image URL is required');
             if (!REGEX_IMAGE.test(t)) return setError(this, 'Invalid Image URL (.jpg, .png...)');
             return true;
         }, msg: '', touched: false
