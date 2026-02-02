@@ -142,7 +142,7 @@
         validator: function(v) {
             const valStr = v.trim();
             if (valStr === '') return setError(this, 'Price is required');
-            if (isNaN(Number(valStr))) return setError(this, 'Price must be numeric');
+            if (isNaN(Number(valStr))) return setError(this, 'Price is required');
             if (Number(valStr) <= 0) return setError(this, 'Price must be positive');
             return true;
         }, msg: ''
