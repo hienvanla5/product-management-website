@@ -1,891 +1,1077 @@
 <!doctype html>
 <html lang="vi">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Thanh toán đơn giản</title>
-  <link rel="stylesheet" href="css/style.css" />
-  <style>
-    /* Reset và base styles */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-    
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      line-height: 1.6;
-      color: #333;
-      background-color: #f8f9fa;
-    }
-    
-    .site-header {
-      background: white;
-      padding: 1rem 2rem;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 2rem;
-    }
-    
-    .site-header h1 {
-      font-size: 1.5rem;
-      color: #2563eb;
-    }
-    
-    nav a {
-      margin-left: 1.5rem;
-      text-decoration: none;
-      color: #4b5563;
-      font-weight: 500;
-    }
-    
-    nav a:hover {
-      color: #2563eb;
-    }
-    
-    main {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 0 1.5rem 2rem;
-    }
-    
-    /* Form container */
-    .checkout-form {
-      background: white;
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    }
-    
-    .checkout-form h2 {
-      color: #1f2937;
-      margin-bottom: 1.5rem;
-      padding-bottom: 0.75rem;
-      border-bottom: 2px solid #e5e7eb;
-      font-size: 1.5rem;
-    }
-    
-    .form-section {
-      margin-bottom: 2rem;
-    }
-    
-    .section-title {
-      display: flex;
-      align-items: center;
-      margin-bottom: 1.25rem;
-      color: #374151;
-      font-size: 1.1rem;
-      font-weight: 600;
-    }
-    
-    .section-title svg {
-      margin-right: 0.75rem;
-      color: #2563eb;
-    }
-    
-    /* Form groups */
-    .form-group {
-      margin-bottom: 1.5rem;
-    }
-    
-    .form-group label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-weight: 500;
-      color: #4b5563;
-    }
-    
-    .form-group input[type="text"],
-    .form-group input[type="email"],
-    .form-group input[type="tel"],
-    .form-group select,
-    .form-group textarea {
-      width: 100%;
-      padding: 0.875rem;
-      border: 1.5px solid #d1d5db;
-      border-radius: 8px;
-      font-size: 1rem;
-      transition: all 0.2s;
-      background: white;
-    }
-    
-    .form-group input:focus,
-    .form-group select:focus,
-    .form-group textarea:focus {
-      outline: none;
-      border-color: #2563eb;
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-    }
-    
-    .form-group input.error,
-    .form-group select.error,
-    .form-group textarea.error {
-      border-color: #dc2626;
-    }
-    
-    .error-message {
-      color: #dc2626;
-      font-size: 0.875rem;
-      margin-top: 0.375rem;
-      display: none;
-    }
-    
-    /* Radio button group */
-    .radio-group {
-      display: flex;
-      gap: 1.5rem;
-      flex-wrap: wrap;
-    }
-    
-    .radio-option {
-      flex: 1;
-      min-width: 200px;
-    }
-    
-    .radio-option input[type="radio"] {
-      display: none;
-    }
-    
-    .radio-label {
-      display: block;
-      padding: 1.25rem;
-      border: 2px solid #e5e7eb;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    
-    .radio-label:hover {
-      border-color: #2563eb;
-      background: #f0f9ff;
-    }
-    
-    .radio-label.selected {
-      border-color: #2563eb;
-      background: #eff6ff;
-    }
-    
-    .radio-label .title {
-      font-weight: 600;
-      margin-bottom: 0.25rem;
-      color: #1f2937;
-    }
-    
-    .radio-label .desc {
-      font-size: 0.9rem;
-      color: #6b7280;
-    }
-    
-    /* Address cascade */
-    .address-cascade {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-      margin-bottom: 1rem;
-    }
-    
-    /* Conditional shipping info */
-    .shipping-info {
-      padding: 1.5rem;
-      background: #f9fafb;
-      border-radius: 8px;
-      border: 1px solid #e5e7eb;
-      margin-top: 1rem;
-      animation: fadeIn 0.3s ease;
-    }
-    
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    
-    /* Order summary - SIMPLIFIED */
-    .order-summary-simple {
-      background: #f8fafc;
-      padding: 1.5rem;
-      border-radius: 8px;
-      margin-top: 2rem;
-      border: 1px solid #e2e8f0;
-    }
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Thanh toán đơn giản</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <style>
+      /* Reset và base styles */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
 
-    /* Layout: form + summary */
-    .checkout-layout {
-      display: flex;
-      gap: 1.5rem;
-      align-items: flex-start;
-      margin-top: 0.5rem;
-    }
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background-color: #f8f9fa;
+      }
 
-    .checkout-form {
-      flex: 2 1 0px;
-      margin-top: 0;
-    }
-
-    .order-summary-simple {
-      flex: 1 0 280px;
-      margin-top: 0;
-      position: sticky;
-      top: 1.25rem;
-      height: fit-content;
-    }
-    
-    .summary-total {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: #1f2937;
-    }
-    
-    .summary-total .amount {
-      color: #2563eb;
-      font-size: 1.5rem;
-    }
-    
-    /* Submit button */
-    .submit-btn {
-      width: 100%;
-      padding: 1rem;
-      background: #2563eb;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 1.125rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
-      margin-top: 2rem;
-    }
-    
-    .submit-btn:hover {
-      background: #1d4ed8;
-    }
-    
-    .submit-btn:disabled {
-      background: #9ca3af;
-      cursor: not-allowed;
-    }
-    
-    /* Message */
-    #empty-msg {
-      text-align: center;
-      color: #6b7280;
-      font-size: 1.1rem;
-      padding: 3rem;
-      background: white;
-      border-radius: 12px;
-    }
-    
-    /* Responsive */
-    @media (max-width: 640px) {
       .site-header {
-        flex-direction: column;
-        gap: 1rem;
-        text-align: center;
+        background: white;
+        padding: 1rem 2rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
       }
-      
+
+      .site-header h1 {
+        font-size: 1.5rem;
+        color: #2563eb;
+      }
+
       nav a {
-        margin: 0 0.75rem;
+        margin-left: 1.5rem;
+        text-decoration: none;
+        color: #4b5563;
+        font-weight: 500;
       }
-      
+
+      nav a:hover {
+        color: #2563eb;
+      }
+
+      main {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 0 1.5rem 2rem;
+      }
+
+      /* Form container */
       .checkout-form {
-        padding: 1.5rem;
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
       }
-      
-      .address-cascade {
-        grid-template-columns: 1fr;
+
+      .checkout-form h2 {
+        color: #1f2937;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid #e5e7eb;
+        font-size: 1.5rem;
       }
-      
+
+      .form-section {
+        margin-bottom: 2rem;
+      }
+
+      .section-title {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.25rem;
+        color: #374151;
+        font-size: 1.1rem;
+        font-weight: 600;
+      }
+
+      .section-title svg {
+        margin-right: 0.75rem;
+        color: #2563eb;
+      }
+
+      /* Form groups */
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: #4b5563;
+      }
+
+      .form-group input[type="text"],
+      .form-group input[type="email"],
+      .form-group input[type="tel"],
+      .form-group select,
+      .form-group textarea {
+        width: 100%;
+        padding: 0.875rem;
+        border: 1.5px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.2s;
+        background: white;
+      }
+
+      .form-group input:focus,
+      .form-group select:focus,
+      .form-group textarea:focus {
+        outline: none;
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+      }
+
+      .form-group input.error,
+      .form-group select.error,
+      .form-group textarea.error {
+        border-color: #dc2626;
+      }
+
+      .error-message {
+        color: #dc2626;
+        font-size: 0.875rem;
+        margin-top: 0.375rem;
+        display: none;
+      }
+
+      /* Radio button group */
       .radio-group {
-        flex-direction: column;
+        display: flex;
+        gap: 1.5rem;
+        flex-wrap: wrap;
       }
-      
+
       .radio-option {
-        min-width: 100%;
+        flex: 1;
+        min-width: 200px;
       }
-    }
-  </style>
-</head>
-<body>
-  <header class="site-header">
-    <h1>Thanh toán đơn giản</h1>
-    <nav>
-      <a href="index.html">Trang chủ</a>
-      <a href="add-product.html">Thêm sản phẩm</a>
-      <span id="user-area"></span>
-    </nav>
-  </header>
 
-  <main>
-    <div id="empty-msg" class="muted" style="display:none">Giỏ hàng của bạn đang trống.</div>
-    
-    <div class="checkout-layout" style="display:none">
-      <form id="checkout-form" class="checkout-form">
-      <!-- THÔNG TIN KHÁCH HÀNG -->
-      <div class="form-section">
-        <h2>Thông tin khách hàng</h2>
-        
-        <div class="form-group">
-          <label for="fullName">Họ và tên *</label>
-          <input type="text" id="fullName" name="fullName" placeholder="Nguyễn Văn A" required />
-          <div class="error-message" id="name-error">Vui lòng nhập họ tên</div>
-        </div>
-        
-        <div class="form-group">
-          <label for="phone">Số điện thoại *</label>
-          <input type="tel" id="phone" name="phone" placeholder="0912345678" required />
-          <div class="error-message" id="phone-error">Vui lòng nhập số điện thoại hợp lệ (10-11 số)</div>
-        </div>
-        
-        <div class="form-group">
-          <label for="email">Email *</label>
-          <input type="email" id="email" name="email" placeholder="nguyenvana@email.com" required />
-          <div class="error-message" id="email-error">Vui lòng nhập email hợp lệ</div>
-        </div>
-      </div>
-      
-      <!-- PHƯƠNG THỨC NHẬN HÀNG -->
-      <div class="form-section">
-        <h2>Phương thức nhận hàng</h2>
-        
-        <div class="radio-group">
-          <div class="radio-option">
-            <input type="radio" id="delivery-shipping" name="deliveryMethod" value="shipping" />
-            <label for="delivery-shipping" class="radio-label">
-              <div class="title">🚚 Giao hàng tận nơi</div>
-              <div class="desc">Nhận hàng tại địa chỉ của bạn</div>
-            </label>
-          </div>
-          
-          <div class="radio-option">
-            <input type="radio" id="delivery-pickup" name="deliveryMethod" value="pickup" />
-            <label for="delivery-pickup" class="radio-label">
-              <div class="title">🏪 Nhận tại cửa hàng</div>
-              <div class="desc">Đến lấy tại địa chỉ cửa hàng</div>
-            </label>
-          </div>
-        </div>
-      </div>
-      
-      <!-- THÔNG TIN GIAO HÀNG (chỉ hiện khi chọn giao hàng) -->
-      <div id="shipping-info-section" class="form-section">
-        <h2>Thông tin giao hàng</h2>
-        
-        <div class="shipping-info">
-          <div class="address-cascade">
-            <div class="form-group">
-              <label for="province">Tỉnh/Thành phố *</label>
-              <select id="province" name="province" required>
-                <option value="">Chọn tỉnh/thành phố</option>
-                <option value="hanoi">Hà Nội</option>
-                <option value="hcm">TP Hồ Chí Minh</option>
-                <option value="danang">Đà Nẵng</option>
-                <option value="haiphong">Hải Phòng</option>
-                <option value="cantho">Cần Thơ</option>
-              </select>
-              <div class="error-message" id="province-error">Vui lòng chọn tỉnh/thành phố</div>
-            </div>
-            
-            <div class="form-group">
-              <label for="district">Quận/Huyện *</label>
-              <select id="district" name="district" required disabled>
-                <option value="">Chọn quận/huyện</option>
-              </select>
-              <div class="error-message" id="district-error">Vui lòng chọn quận/huyện</div>
-            </div>
-            
-            <div class="form-group">
-              <label for="ward">Phường/Xã *</label>
-              <select id="ward" name="ward" required disabled>
-                <option value="">Chọn phường/xã</option>
-              </select>
-              <div class="error-message" id="ward-error">Vui lòng chọn phường/xã</div>
-            </div>
-          </div>
-          
-          <div class="form-group">
-            <label for="address">Địa chỉ chi tiết *</label>
-            <input type="text" id="address" name="address" placeholder="Số nhà, tên đường, tòa nhà..." required />
-            <div class="error-message" id="address-error">Vui lòng nhập địa chỉ chi tiết</div>
-          </div>
-          
-          <div class="form-group">
-            <label for="addressNote">Ghi chú địa chỉ (tùy chọn)</label>
-            <textarea id="addressNote" name="addressNote" rows="3" placeholder="Ví dụ: Chung cư A, lầu 3, gần siêu thị B..."></textarea>
-          </div>
-        </div>
-      </div>
-      
-      <!-- THÔNG TIN CỬA HÀNG (chỉ hiện khi chọn nhận tại cửa hàng) -->
-      <div id="pickup-info-section" class="form-section" style="display:none">
-        <h2>Thông tin nhận hàng</h2>
-        
-        <div class="shipping-info">
-          <div class="form-group">
-            <label>Địa chỉ cửa hàng</label>
-            <div style="padding: 1rem; background: white; border-radius: 6px; border: 1px solid #e5e7eb;">
-              <p style="font-weight: 600; margin-bottom: 0.5rem;">📍 Cửa hàng chính</p>
-              <p>123 Đường ABC, Quận 1, TP. Hồ Chí Minh</p>
-              <p style="color: #6b7280; font-size: 0.9rem; margin-top: 0.5rem;">
-                ⏰ Giờ mở cửa: 8:00 - 22:00 (Thứ 2 - Chủ nhật)
-              </p>
-            </div>
-          </div>
-          
-          <div class="form-group">
-            <label for="pickupNote">Ghi chú (tùy chọn)</label>
-            <textarea id="pickupNote" name="pickupNote" rows="2" placeholder="Ví dụ: Nhận hàng sau 18:00..."></textarea>
-          </div>
-        </div>
-      </div>
-      
-      <!-- TỔNG ĐƠN HÀNG (ĐƠN GIẢN) -->
-        <!-- NÚT XÁC NHẬN -->
-        <button type="submit" class="submit-btn">Xác nhận đơn hàng</button>
-      </form>
-
-      <aside class="order-summary-simple">
-        <div class="summary-total">
-          <span>Tổng thanh toán:</span>
-          <span class="amount" id="order-total">$0.00</span>
-        </div>
-        <p style="color: #6b7280; font-size: 0.9rem; margin-top: 0.5rem; text-align: center;">
-          Đã bao gồm thuế (nếu có)
-        </p>
-      </aside>
-    </div>
-  </main>
-
-  <script>
-    // Cart functions (giữ nguyên từ file cũ)
-    function getCart() {
-      try {
-        return JSON.parse(localStorage.getItem('cart')) || [];
-      } catch {
-        return [];
+      .radio-option input[type="radio"] {
+        display: none;
       }
-    }
-    
-    function getProducts() {
-      try {
-        return JSON.parse(localStorage.getItem('products')) || [];
-      } catch {
-        return [];
-      }
-    }
-    
-    function escapeHtml(text) {
-      const div = document.createElement('div');
-      div.textContent = text;
-      return div.innerHTML;
-    }
-    
-    function updateCartCount() {
-      const cart = getCart();
-      const count = cart.reduce((sum, item) => sum + (item.qty || 1), 0);
-      const countEl = document.getElementById('cart-count');
-      if (countEl) countEl.textContent = count;
-    }
 
-    // Khởi tạo trang
-    document.addEventListener('DOMContentLoaded', function() {
-      const cart = getCart();
-      const emptyMsg = document.getElementById('empty-msg');
-      const checkoutLayout = document.querySelector('.checkout-layout');
-      const checkoutFormEl = document.getElementById('checkout-form');
-      
-      if (!cart || cart.length === 0) {
-        emptyMsg.style.display = 'block';
-        if (checkoutLayout) checkoutLayout.style.display = 'none';
-      } else {
-        emptyMsg.style.display = 'none';
-        if (checkoutLayout) checkoutLayout.style.display = 'flex';
-        calculateOrderTotal();
+      .radio-label {
+        display: block;
+        padding: 1.25rem;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
       }
-      
-      updateCartCount();
-      initForm();
-    });
 
-    // Tính tổng đơn hàng (đơn giản)
-    function calculateOrderTotal() {
-      const cart = getCart();
-      const products = getProducts();
-      
-      let total = 0;
-      cart.forEach(item => {
-        const product = products.find(p => p.id === item.id);
-        if (product) {
-          total += (product.price || 0) * (item.qty || 1);
+      .radio-label:hover {
+        border-color: #2563eb;
+        background: #f0f9ff;
+      }
+
+      .radio-label.selected {
+        border-color: #2563eb;
+        background: #eff6ff;
+      }
+
+      .radio-label .title {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+        color: #1f2937;
+      }
+
+      .radio-label .desc {
+        font-size: 0.9rem;
+        color: #6b7280;
+      }
+
+      /* Address cascade */
+      .address-cascade {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      /* Conditional shipping info */
+      .shipping-info {
+        padding: 1.5rem;
+        background: #f9fafb;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+        margin-top: 1rem;
+        animation: fadeIn 0.3s ease;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
         }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Order summary - SIMPLIFIED */
+      .order-summary-simple {
+        background: #f8fafc;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-top: 2rem;
+        border: 1px solid #e2e8f0;
+      }
+
+      /* Layout: form + summary */
+      .checkout-layout {
+        display: flex;
+        gap: 1.5rem;
+        align-items: flex-start;
+        margin-top: 0.5rem;
+      }
+
+      .checkout-form {
+        flex: 2 1 0px;
+        margin-top: 0;
+      }
+
+      .order-summary-simple {
+        flex: 1 0 280px;
+        margin-top: 0;
+        position: sticky;
+        top: 1.25rem;
+        height: fit-content;
+      }
+
+      .summary-total {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1f2937;
+      }
+
+      .summary-total .amount {
+        color: #2563eb;
+        font-size: 1.5rem;
+      }
+
+      /* Submit button */
+      .submit-btn {
+        width: 100%;
+        padding: 1rem;
+        background: #2563eb;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1.125rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+        margin-top: 2rem;
+      }
+
+      .submit-btn:hover {
+        background: #1d4ed8;
+      }
+
+      .submit-btn:disabled {
+        background: #9ca3af;
+        cursor: not-allowed;
+      }
+
+      /* Message */
+      #empty-msg {
+        text-align: center;
+        color: #6b7280;
+        font-size: 1.1rem;
+        padding: 3rem;
+        background: white;
+        border-radius: 12px;
+      }
+
+      /* Responsive */
+      @media (max-width: 640px) {
+        .site-header {
+          flex-direction: column;
+          gap: 1rem;
+          text-align: center;
+        }
+
+        nav a {
+          margin: 0 0.75rem;
+        }
+
+        .checkout-form {
+          padding: 1.5rem;
+        }
+
+        .address-cascade {
+          grid-template-columns: 1fr;
+        }
+
+        .radio-group {
+          flex-direction: column;
+        }
+
+        .radio-option {
+          min-width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <h1>Thanh toán đơn giản</h1>
+      <nav>
+        <a href="index.html">Trang chủ</a>
+        <a href="add-product.html">Thêm sản phẩm</a>
+        <span id="user-area"></span>
+      </nav>
+    </header>
+
+    <main>
+      <div id="empty-msg" class="muted" style="display: none">
+        Giỏ hàng của bạn đang trống.
+      </div>
+
+      <div class="checkout-layout" style="display: none">
+        <form id="checkout-form" class="checkout-form">
+          <!-- THÔNG TIN KHÁCH HÀNG -->
+          <div class="form-section">
+            <h2>Thông tin khách hàng</h2>
+
+            <div class="form-group">
+              <label for="fullName">Họ và tên *</label>
+              <input
+                type="text"
+                id="fullName"
+                name="fullName"
+                placeholder="Nguyễn Văn A"
+                required
+              />
+              <div class="error-message" id="name-error">
+                Vui lòng nhập họ tên
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="phone">Số điện thoại *</label>
+              <input
+                type="tel"
+                id="phone"
+                name="phone"
+                placeholder="0912345678"
+                required
+              />
+              <div class="error-message" id="phone-error">
+                Vui lòng nhập số điện thoại hợp lệ (10-11 số)
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email *</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="nguyenvana@email.com"
+                required
+              />
+              <div class="error-message" id="email-error">
+                Vui lòng nhập email hợp lệ
+              </div>
+            </div>
+          </div>
+
+          <!-- PHƯƠNG THỨC NHẬN HÀNG -->
+          <div class="form-section">
+            <h2>Phương thức nhận hàng</h2>
+
+            <div class="radio-group">
+              <div class="radio-option">
+                <input
+                  type="radio"
+                  id="delivery-shipping"
+                  name="deliveryMethod"
+                  value="shipping"
+                />
+                <label for="delivery-shipping" class="radio-label">
+                  <div class="title">🚚 Giao hàng tận nơi</div>
+                  <div class="desc">Nhận hàng tại địa chỉ của bạn</div>
+                </label>
+              </div>
+
+              <div class="radio-option">
+                <input
+                  type="radio"
+                  id="delivery-pickup"
+                  name="deliveryMethod"
+                  value="pickup"
+                />
+                <label for="delivery-pickup" class="radio-label">
+                  <div class="title">🏪 Nhận tại cửa hàng</div>
+                  <div class="desc">Đến lấy tại địa chỉ cửa hàng</div>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- THÔNG TIN GIAO HÀNG (chỉ hiện khi chọn giao hàng) -->
+          <div id="shipping-info-section" class="form-section">
+            <h2>Thông tin giao hàng</h2>
+
+            <div class="shipping-info">
+              <div class="address-cascade">
+                <div class="form-group">
+                  <label for="province">Tỉnh/Thành phố *</label>
+                  <select id="province" name="province" required>
+                    <option value="">Chọn tỉnh/thành phố</option>
+                    <option value="hanoi">Hà Nội</option>
+                    <option value="hcm">TP Hồ Chí Minh</option>
+                    <option value="danang">Đà Nẵng</option>
+                    <option value="haiphong">Hải Phòng</option>
+                    <option value="cantho">Cần Thơ</option>
+                  </select>
+                  <div class="error-message" id="province-error">
+                    Vui lòng chọn tỉnh/thành phố
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="district">Quận/Huyện *</label>
+                  <select id="district" name="district" required disabled>
+                    <option value="">Chọn quận/huyện</option>
+                  </select>
+                  <div class="error-message" id="district-error">
+                    Vui lòng chọn quận/huyện
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="ward">Phường/Xã *</label>
+                  <select id="ward" name="ward" required disabled>
+                    <option value="">Chọn phường/xã</option>
+                  </select>
+                  <div class="error-message" id="ward-error">
+                    Vui lòng chọn phường/xã
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="address">Địa chỉ chi tiết *</label>
+                <input
+                  type="text"
+                  id="address"
+                  name="address"
+                  placeholder="Số nhà, tên đường, tòa nhà..."
+                  required
+                />
+                <div class="error-message" id="address-error">
+                  Vui lòng nhập địa chỉ chi tiết
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="addressNote">Ghi chú địa chỉ (tùy chọn)</label>
+                <textarea
+                  id="addressNote"
+                  name="addressNote"
+                  rows="3"
+                  placeholder="Ví dụ: Chung cư A, lầu 3, gần siêu thị B..."
+                ></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- THÔNG TIN CỬA HÀNG (chỉ hiện khi chọn nhận tại cửa hàng) -->
+          <div
+            id="pickup-info-section"
+            class="form-section"
+            style="display: none"
+          >
+            <h2>Thông tin nhận hàng</h2>
+
+            <div class="shipping-info">
+              <div class="form-group">
+                <label>Địa chỉ cửa hàng</label>
+                <div
+                  style="
+                    padding: 1rem;
+                    background: white;
+                    border-radius: 6px;
+                    border: 1px solid #e5e7eb;
+                  "
+                >
+                  <p style="font-weight: 600; margin-bottom: 0.5rem">
+                    📍 Cửa hàng chính
+                  </p>
+                  <p>123 Đường ABC, Quận 1, TP. Hồ Chí Minh</p>
+                  <p
+                    style="
+                      color: #6b7280;
+                      font-size: 0.9rem;
+                      margin-top: 0.5rem;
+                    "
+                  >
+                    ⏰ Giờ mở cửa: 8:00 - 22:00 (Thứ 2 - Chủ nhật)
+                  </p>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="pickupNote">Ghi chú (tùy chọn)</label>
+                <textarea
+                  id="pickupNote"
+                  name="pickupNote"
+                  rows="2"
+                  placeholder="Ví dụ: Nhận hàng sau 18:00..."
+                ></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- TỔNG ĐƠN HÀNG (ĐƠN GIẢN) -->
+          <!-- NÚT XÁC NHẬN -->
+          <button type="submit" class="submit-btn">Xác nhận đơn hàng</button>
+        </form>
+
+        <aside class="order-summary-simple">
+          <div class="summary-total">
+            <span>Tổng thanh toán:</span>
+            <span class="amount" id="order-total">$0.00</span>
+          </div>
+          <p
+            style="
+              color: #6b7280;
+              font-size: 0.9rem;
+              margin-top: 0.5rem;
+              text-align: center;
+            "
+          >
+            Đã bao gồm thuế (nếu có)
+          </p>
+        </aside>
+      </div>
+    </main>
+
+    <script src="js/app.js"></script>
+
+    <script>
+      // Cart functions (giữ nguyên từ file cũ)
+      function getCart() {
+        try {
+          return JSON.parse(localStorage.getItem("cart")) || [];
+        } catch {
+          return [];
+        }
+      }
+
+      function getProducts() {
+        try {
+          return JSON.parse(localStorage.getItem("products")) || [];
+        } catch {
+          return [];
+        }
+      }
+
+      function escapeHtml(text) {
+        const div = document.createElement("div");
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      function updateCartCount() {
+        const cart = getCart();
+        const count = cart.reduce((sum, item) => sum + (item.qty || 1), 0);
+        const countEl = document.getElementById("cart-count");
+        if (countEl) countEl.textContent = count;
+      }
+
+      // Khởi tạo trang
+      document.addEventListener("DOMContentLoaded", function () {
+        const cart = getCart();
+        const emptyMsg = document.getElementById("empty-msg");
+        const checkoutLayout = document.querySelector(".checkout-layout");
+        const checkoutFormEl = document.getElementById("checkout-form");
+
+        if (!cart || cart.length === 0) {
+          emptyMsg.style.display = "block";
+          if (checkoutLayout) checkoutLayout.style.display = "none";
+        } else {
+          emptyMsg.style.display = "none";
+          if (checkoutLayout) checkoutLayout.style.display = "flex";
+          calculateOrderTotal();
+        }
+
+        updateCartCount();
+        initForm();
       });
-      
-      document.getElementById('order-total').textContent = '$' + total.toFixed(2);
-    }
 
-    // Khởi tạo form
-    function initForm() {
-      // Toggle phương thức nhận hàng
-      const deliveryMethodRadios = document.querySelectorAll('input[name="deliveryMethod"]');
-      const shippingSection = document.getElementById('shipping-info-section');
-      const pickupSection = document.getElementById('pickup-info-section');
+      // Tính tổng đơn hàng (đơn giản)
+      function calculateOrderTotal() {
+        const cart = getCart();
+        const products = getProducts();
 
-      // Fields in top-to-bottom order
-      const fullName = document.getElementById('fullName');
-      const phone = document.getElementById('phone');
-      const email = document.getElementById('email');
-      const submitBtn = document.querySelector('.submit-btn');
-      const provinceSelect = document.getElementById('province');
-      const districtSelect = document.getElementById('district');
-      const wardSelect = document.getElementById('ward');
-      const addressInput = document.getElementById('address');
-
-      // Utility validators (no UI changes)
-      function validName(val) {
-        return val && val.trim().length > 0;
-      }
-      function validPhone(val) {
-        return /^(0[0-9]{9,10})$/.test((val||'').trim());
-      }
-      function validEmail(val) {
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((val||'').trim());
-      }
-
-      // Update sequential enabled/disabled state
-      function updateSequentialState() {
-        // Step 1 -> enable phone
-        if (validName(fullName.value)) {
-          phone.disabled = false;
-        } else {
-          phone.disabled = true;
-          phone.classList.remove('error');
-        }
-
-        // Step 2 -> enable email
-        if (!phone.disabled && validPhone(phone.value)) {
-          email.disabled = false;
-        } else {
-          email.disabled = true;
-          email.classList.remove('error');
-        }
-
-        // Step 3 -> enable delivery method radios
-        const deliveryEnabled = !email.disabled && validEmail(email.value);
-        deliveryMethodRadios.forEach(r => r.disabled = !deliveryEnabled);
-
-        // If a delivery method is selected, show appropriate section and enable its fields
-        const selected = document.querySelector('input[name="deliveryMethod"]:checked');
-        if (!selected) {
-          shippingSection.style.display = 'none';
-          pickupSection.style.display = 'none';
-          // disable and clear shipping fields
-          provinceSelect.disabled = true;
-          districtSelect.disabled = true;
-          wardSelect.disabled = true;
-          addressInput.disabled = true;
-          ['province','district','ward','address'].forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.removeAttribute('required');
-          });
-        } else if (selected.value === 'shipping') {
-          shippingSection.style.display = 'block';
-          pickupSection.style.display = 'none';
-          // enable province only; the rest follow cascade
-          provinceSelect.disabled = false;
-          if (provinceSelect.value) districtSelect.disabled = false; else districtSelect.disabled = true;
-          if (districtSelect.value) wardSelect.disabled = false; else wardSelect.disabled = true;
-          if (wardSelect.value) addressInput.disabled = false; else addressInput.disabled = true;
-          // set required on shipping fields only when enabled
-          if (!provinceSelect.disabled) provinceSelect.setAttribute('required',''); else provinceSelect.removeAttribute('required');
-          if (!districtSelect.disabled) districtSelect.setAttribute('required',''); else districtSelect.removeAttribute('required');
-          if (!wardSelect.disabled) wardSelect.setAttribute('required',''); else wardSelect.removeAttribute('required');
-          if (!addressInput.disabled) addressInput.setAttribute('required',''); else addressInput.removeAttribute('required');
-        } else {
-          // pickup
-          shippingSection.style.display = 'none';
-          pickupSection.style.display = 'block';
-          provinceSelect.disabled = true;
-          districtSelect.disabled = true;
-          wardSelect.disabled = true;
-          addressInput.disabled = true;
-          ['province','district','ward','address'].forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.removeAttribute('required');
-            if (el) el.classList.remove('error');
-            const err = document.getElementById(id + '-error'); if (err) err.style.display = 'none';
-          });
-        }
-
-        // Notes should always be editable
-        const addressNote = document.getElementById('addressNote');
-        const pickupNote = document.getElementById('pickupNote');
-        if (addressNote) addressNote.disabled = false;
-        if (pickupNote) pickupNote.disabled = false;
-
-        // Update submit button via existing validateForm
-        submitBtn.disabled = !validateForm();
-      }
-
-      // Wire up inputs to re-evaluate sequence as user types/changes
-      [fullName, phone, email, provinceSelect, districtSelect, wardSelect, addressInput].forEach(el => {
-        if (!el) return;
-        el.addEventListener('input', () => { validateField(el); updateSequentialState(); });
-        el.addEventListener('change', () => { validateField(el); updateSequentialState(); });
-      });
-
-      // Radio change handler: update UI classes and then sequential state
-      deliveryMethodRadios.forEach(radio => {
-        radio.addEventListener('change', function() {
-          document.querySelectorAll('.radio-label').forEach(label => label.classList.remove('selected'));
-          const selectedLabel = document.querySelector(`label[for="${this.id}"]`);
-          if (selectedLabel) selectedLabel.classList.add('selected');
-          updateSequentialState();
+        let total = 0;
+        cart.forEach((item) => {
+          const product = products.find((p) => p.id === item.id);
+          if (product) {
+            total += (product.price || 0) * (item.qty || 1);
+          }
         });
-      });
 
-      // Initialize: hide sections and disable fields until user progresses
-      shippingSection.style.display = 'none';
-      pickupSection.style.display = 'none';
-      phone.disabled = true;
-      email.disabled = true;
-      deliveryMethodRadios.forEach(r => r.disabled = true);
-      provinceSelect.disabled = true;
-      districtSelect.disabled = true;
-      wardSelect.disabled = true;
-      addressInput.disabled = true;
-      submitBtn.disabled = true;
-      
-      // Cascade địa chỉ (mẫu)
-      
-      // Dữ liệu mẫu cho cascade dropdown
-      const addressData = {
-        'hanoi': {
-          name: 'Hà Nội',
-          districts: {
-            'hbt': { name: 'Hoàn Kiếm', wards: ['Phan Chu Trinh', 'Hàng Bài', 'Tràng Tiền'] },
-            'hbm': { name: 'Hai Bà Trưng', wards: ['Bạch Đằng', 'Bách Khoa', 'Đồng Tâm'] },
-            'cg': { name: 'Cầu Giấy', wards: ['Dịch Vọng', 'Nghĩa Đô', 'Quan Hoa'] }
-          }
-        },
-        'hcm': {
-          name: 'TP Hồ Chí Minh',
-          districts: {
-            'q1': { name: 'Quận 1', wards: ['Bến Nghé', 'Bến Thành', 'Nguyễn Thái Bình'] },
-            'q3': { name: 'Quận 3', wards: ['Võ Thị Sáu', 'Phường 2', 'Phường 3'] },
-            'qbt': { name: 'Bình Thạnh', wards: ['Phường 1', 'Phường 2', 'Phường 3'] }
-          }
-        },
-        'danang': {
-          name: 'Đà Nẵng',
-          districts: {
-            'hl': { name: 'Hải Châu', wards: ['Bình Hiên', 'Hải Châu I', 'Hải Châu II'] },
-            'st': { name: 'Sơn Trà', wards: ['An Hải Bắc', 'An Hải Đông', 'An Hải Tây'] },
-            'nt': { name: 'Ngũ Hành Sơn', wards: ['Hoà Hải', 'Hoà Quý', 'Mỹ An'] }
-          }
+        document.getElementById("order-total").textContent =
+          "$" + total.toFixed(2);
+      }
+
+      // Khởi tạo form
+      function initForm() {
+        // Toggle phương thức nhận hàng
+        const deliveryMethodRadios = document.querySelectorAll(
+          'input[name="deliveryMethod"]',
+        );
+        const shippingSection = document.getElementById(
+          "shipping-info-section",
+        );
+        const pickupSection = document.getElementById("pickup-info-section");
+
+        // Fields in top-to-bottom order
+        const fullName = document.getElementById("fullName");
+        const phone = document.getElementById("phone");
+        const email = document.getElementById("email");
+        const submitBtn = document.querySelector(".submit-btn");
+        const provinceSelect = document.getElementById("province");
+        const districtSelect = document.getElementById("district");
+        const wardSelect = document.getElementById("ward");
+        const addressInput = document.getElementById("address");
+
+        // Utility validators (no UI changes)
+        function validName(val) {
+          return val && val.trim().length > 0;
         }
-      };
-      
-      provinceSelect.addEventListener('change', function() {
-        const provinceId = this.value;
-        
-        // Reset district và ward
-        districtSelect.innerHTML = '<option value="">Chọn quận/huyện</option>';
-        wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
-        districtSelect.disabled = !provinceId;
+        function validPhone(val) {
+          return /^(0[0-9]{9,10})$/.test((val || "").trim());
+        }
+        function validEmail(val) {
+          return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((val || "").trim());
+        }
+
+        // Update sequential enabled/disabled state
+        function updateSequentialState() {
+          // Step 1 -> enable phone
+          if (validName(fullName.value)) {
+            phone.disabled = false;
+          } else {
+            phone.disabled = true;
+            phone.classList.remove("error");
+          }
+
+          // Step 2 -> enable email
+          if (!phone.disabled && validPhone(phone.value)) {
+            email.disabled = false;
+          } else {
+            email.disabled = true;
+            email.classList.remove("error");
+          }
+
+          // Step 3 -> enable delivery method radios
+          const deliveryEnabled = !email.disabled && validEmail(email.value);
+          deliveryMethodRadios.forEach((r) => (r.disabled = !deliveryEnabled));
+
+          // If a delivery method is selected, show appropriate section and enable its fields
+          const selected = document.querySelector(
+            'input[name="deliveryMethod"]:checked',
+          );
+          if (!selected) {
+            shippingSection.style.display = "none";
+            pickupSection.style.display = "none";
+            // disable and clear shipping fields
+            provinceSelect.disabled = true;
+            districtSelect.disabled = true;
+            wardSelect.disabled = true;
+            addressInput.disabled = true;
+            ["province", "district", "ward", "address"].forEach((id) => {
+              const el = document.getElementById(id);
+              if (el) el.removeAttribute("required");
+            });
+          } else if (selected.value === "shipping") {
+            shippingSection.style.display = "block";
+            pickupSection.style.display = "none";
+            // enable province only; the rest follow cascade
+            provinceSelect.disabled = false;
+            if (provinceSelect.value) districtSelect.disabled = false;
+            else districtSelect.disabled = true;
+            if (districtSelect.value) wardSelect.disabled = false;
+            else wardSelect.disabled = true;
+            if (wardSelect.value) addressInput.disabled = false;
+            else addressInput.disabled = true;
+            // set required on shipping fields only when enabled
+            if (!provinceSelect.disabled)
+              provinceSelect.setAttribute("required", "");
+            else provinceSelect.removeAttribute("required");
+            if (!districtSelect.disabled)
+              districtSelect.setAttribute("required", "");
+            else districtSelect.removeAttribute("required");
+            if (!wardSelect.disabled) wardSelect.setAttribute("required", "");
+            else wardSelect.removeAttribute("required");
+            if (!addressInput.disabled)
+              addressInput.setAttribute("required", "");
+            else addressInput.removeAttribute("required");
+          } else {
+            // pickup
+            shippingSection.style.display = "none";
+            pickupSection.style.display = "block";
+            provinceSelect.disabled = true;
+            districtSelect.disabled = true;
+            wardSelect.disabled = true;
+            addressInput.disabled = true;
+            ["province", "district", "ward", "address"].forEach((id) => {
+              const el = document.getElementById(id);
+              if (el) el.removeAttribute("required");
+              if (el) el.classList.remove("error");
+              const err = document.getElementById(id + "-error");
+              if (err) err.style.display = "none";
+            });
+          }
+
+          // Notes should always be editable
+          const addressNote = document.getElementById("addressNote");
+          const pickupNote = document.getElementById("pickupNote");
+          if (addressNote) addressNote.disabled = false;
+          if (pickupNote) pickupNote.disabled = false;
+
+          // Update submit button via existing validateForm
+          submitBtn.disabled = !validateForm();
+        }
+
+        // Wire up inputs to re-evaluate sequence as user types/changes
+        [
+          fullName,
+          phone,
+          email,
+          provinceSelect,
+          districtSelect,
+          wardSelect,
+          addressInput,
+        ].forEach((el) => {
+          if (!el) return;
+          el.addEventListener("input", () => {
+            validateField(el);
+            updateSequentialState();
+          });
+          el.addEventListener("change", () => {
+            validateField(el);
+            updateSequentialState();
+          });
+        });
+
+        // Radio change handler: update UI classes and then sequential state
+        deliveryMethodRadios.forEach((radio) => {
+          radio.addEventListener("change", function () {
+            document
+              .querySelectorAll(".radio-label")
+              .forEach((label) => label.classList.remove("selected"));
+            const selectedLabel = document.querySelector(
+              `label[for="${this.id}"]`,
+            );
+            if (selectedLabel) selectedLabel.classList.add("selected");
+            updateSequentialState();
+          });
+        });
+
+        // Initialize: hide sections and disable fields until user progresses
+        shippingSection.style.display = "none";
+        pickupSection.style.display = "none";
+        phone.disabled = true;
+        email.disabled = true;
+        deliveryMethodRadios.forEach((r) => (r.disabled = true));
+        provinceSelect.disabled = true;
+        districtSelect.disabled = true;
         wardSelect.disabled = true;
-        
-        if (provinceId && addressData[provinceId]) {
-          districtSelect.disabled = false;
-          const districts = addressData[provinceId].districts;
-          
-          for (const [id, district] of Object.entries(districts)) {
-            const option = document.createElement('option');
-            option.value = id;
-            option.textContent = district.name;
-            districtSelect.appendChild(option);
+        addressInput.disabled = true;
+        submitBtn.disabled = true;
+
+        // Cascade địa chỉ (mẫu)
+
+        // Dữ liệu mẫu cho cascade dropdown
+        const addressData = {
+          hanoi: {
+            name: "Hà Nội",
+            districts: {
+              hbt: {
+                name: "Hoàn Kiếm",
+                wards: ["Phan Chu Trinh", "Hàng Bài", "Tràng Tiền"],
+              },
+              hbm: {
+                name: "Hai Bà Trưng",
+                wards: ["Bạch Đằng", "Bách Khoa", "Đồng Tâm"],
+              },
+              cg: {
+                name: "Cầu Giấy",
+                wards: ["Dịch Vọng", "Nghĩa Đô", "Quan Hoa"],
+              },
+            },
+          },
+          hcm: {
+            name: "TP Hồ Chí Minh",
+            districts: {
+              q1: {
+                name: "Quận 1",
+                wards: ["Bến Nghé", "Bến Thành", "Nguyễn Thái Bình"],
+              },
+              q3: {
+                name: "Quận 3",
+                wards: ["Võ Thị Sáu", "Phường 2", "Phường 3"],
+              },
+              qbt: {
+                name: "Bình Thạnh",
+                wards: ["Phường 1", "Phường 2", "Phường 3"],
+              },
+            },
+          },
+          danang: {
+            name: "Đà Nẵng",
+            districts: {
+              hl: {
+                name: "Hải Châu",
+                wards: ["Bình Hiên", "Hải Châu I", "Hải Châu II"],
+              },
+              st: {
+                name: "Sơn Trà",
+                wards: ["An Hải Bắc", "An Hải Đông", "An Hải Tây"],
+              },
+              nt: {
+                name: "Ngũ Hành Sơn",
+                wards: ["Hoà Hải", "Hoà Quý", "Mỹ An"],
+              },
+            },
+          },
+        };
+
+        provinceSelect.addEventListener("change", function () {
+          const provinceId = this.value;
+
+          // Reset district và ward
+          districtSelect.innerHTML =
+            '<option value="">Chọn quận/huyện</option>';
+          wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
+          districtSelect.disabled = !provinceId;
+          wardSelect.disabled = true;
+
+          if (provinceId && addressData[provinceId]) {
+            districtSelect.disabled = false;
+            const districts = addressData[provinceId].districts;
+
+            for (const [id, district] of Object.entries(districts)) {
+              const option = document.createElement("option");
+              option.value = id;
+              option.textContent = district.name;
+              districtSelect.appendChild(option);
+            }
+          }
+
+          validateForm();
+        });
+
+        districtSelect.addEventListener("change", function () {
+          const provinceId = provinceSelect.value;
+          const districtId = this.value;
+
+          // Reset ward
+          wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
+          wardSelect.disabled = !districtId;
+
+          if (
+            provinceId &&
+            districtId &&
+            addressData[provinceId] &&
+            addressData[provinceId].districts[districtId]
+          ) {
+            wardSelect.disabled = false;
+            const wards = addressData[provinceId].districts[districtId].wards;
+
+            wards.forEach((wardName) => {
+              const option = document.createElement("option");
+              option.value = wardName.toLowerCase().replace(/ /g, "_");
+              option.textContent = wardName;
+              wardSelect.appendChild(option);
+            });
+          }
+
+          validateForm();
+        });
+
+        wardSelect.addEventListener("change", validateForm);
+
+        // Real-time validation
+        const formInputs = document.querySelectorAll(
+          "#checkout-form input, #checkout-form select, #checkout-form textarea",
+        );
+        formInputs.forEach((input) => {
+          input.addEventListener("input", validateForm);
+          input.addEventListener("change", validateForm);
+          input.addEventListener("blur", function () {
+            validateField(this);
+          });
+        });
+
+        // Form submission
+        document
+          .getElementById("checkout-form")
+          .addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            if (!validateForm()) {
+              alert("Vui lòng điền đầy đủ thông tin hợp lệ");
+              return;
+            }
+
+            // Lấy dữ liệu form
+            const dmEl = document.querySelector(
+              'input[name="deliveryMethod"]:checked',
+            );
+            if (!dmEl) {
+              alert("Vui lòng chọn phương thức nhận hàng");
+              return;
+            }
+            const deliveryMethod = dmEl.value;
+
+            const formData = {
+              customer: {
+                fullName: document.getElementById("fullName").value,
+                phone: document.getElementById("phone").value,
+                email: document.getElementById("email").value,
+              },
+              deliveryMethod: deliveryMethod,
+              orderTotal: document.getElementById("order-total").textContent,
+              items: getCart(),
+              timestamp: new Date().toISOString(),
+            };
+
+            // Thêm thông tin giao hàng hoặc nhận tại cửa hàng
+            if (formData.deliveryMethod === "shipping") {
+              formData.shippingInfo = {
+                province:
+                  document.getElementById("province").options[
+                    document.getElementById("province").selectedIndex
+                  ].text,
+                district:
+                  document.getElementById("district").options[
+                    document.getElementById("district").selectedIndex
+                  ].text,
+                ward: document.getElementById("ward").options[
+                  document.getElementById("ward").selectedIndex
+                ].text,
+                address: document.getElementById("address").value,
+                note: document.getElementById("addressNote").value,
+              };
+            } else {
+              formData.pickupInfo = {
+                note: document.getElementById("pickupNote").value,
+              };
+            }
+
+            // Lưu đơn hàng (trong thực tế sẽ gửi đến server)
+            const orders = JSON.parse(localStorage.getItem("orders") || "[]");
+            orders.push(formData);
+            localStorage.setItem("orders", JSON.stringify(orders));
+
+            // Xóa giỏ hàng
+            localStorage.removeItem("cart");
+
+            // Thông báo thành công (toast nếu có, fallback alert)
+            const successMsg = `🎉 Đơn hàng đã được đặt thành công! Tổng tiền: ${formData.orderTotal}. Chúng tôi sẽ liên hệ bạn qua: ${formData.customer.phone}`;
+            if (typeof showToast === "function") {
+              showToast(successMsg, "success", { duration: 3500 });
+              setTimeout(() => {
+                window.location.href = "index.html";
+              }, 1200);
+            } else {
+              alert(successMsg);
+              window.location.href = "index.html";
+            }
+          });
+      }
+
+      // Validation functions
+      function validateField(field) {
+        const errorElement = document.getElementById(field.id + "-error");
+        if (!errorElement) return true;
+
+        let isValid = true;
+        let message = "";
+
+        // Clear previous error state
+        field.classList.remove("error");
+        errorElement.style.display = "none";
+
+        // Check required
+        if (field.hasAttribute("required") && !field.value.trim()) {
+          isValid = false;
+          message = "Trường này là bắt buộc";
+        }
+
+        // Specific validations
+        else if (field.id === "phone" && field.value.trim()) {
+          const phoneRegex = /^(0[0-9]{9,10})$/;
+          if (!phoneRegex.test(field.value.trim())) {
+            isValid = false;
+            message = "Số điện thoại không hợp lệ (10-11 số, bắt đầu bằng 0)";
+          }
+        } else if (field.id === "email" && field.value.trim()) {
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!emailRegex.test(field.value.trim())) {
+            isValid = false;
+            message = "Email không hợp lệ";
           }
         }
-        
-        validateForm();
-      });
-      
-      districtSelect.addEventListener('change', function() {
-        const provinceId = provinceSelect.value;
-        const districtId = this.value;
-        
-        // Reset ward
-        wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
-        wardSelect.disabled = !districtId;
-        
-        if (provinceId && districtId && addressData[provinceId] && addressData[provinceId].districts[districtId]) {
-          wardSelect.disabled = false;
-          const wards = addressData[provinceId].districts[districtId].wards;
-          
-          wards.forEach(wardName => {
-            const option = document.createElement('option');
-            option.value = wardName.toLowerCase().replace(/ /g, '_');
-            option.textContent = wardName;
-            wardSelect.appendChild(option);
-          });
-        }
-        
-        validateForm();
-      });
-      
-      wardSelect.addEventListener('change', validateForm);
-      
-      // Real-time validation
-      const formInputs = document.querySelectorAll('#checkout-form input, #checkout-form select, #checkout-form textarea');
-      formInputs.forEach(input => {
-        input.addEventListener('input', validateForm);
-        input.addEventListener('change', validateForm);
-        input.addEventListener('blur', function() {
-          validateField(this);
-        });
-      });
-      
-      // Form submission
-      document.getElementById('checkout-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        if (!validateForm()) {
-          alert('Vui lòng điền đầy đủ thông tin hợp lệ');
-          return;
-        }
-        
-        // Lấy dữ liệu form
-        const dmEl = document.querySelector('input[name="deliveryMethod"]:checked');
-        if (!dmEl) {
-          alert('Vui lòng chọn phương thức nhận hàng');
-          return;
-        }
-        const deliveryMethod = dmEl.value;
 
-        const formData = {
-          customer: {
-            fullName: document.getElementById('fullName').value,
-            phone: document.getElementById('phone').value,
-            email: document.getElementById('email').value
-          },
-          deliveryMethod: deliveryMethod,
-          orderTotal: document.getElementById('order-total').textContent,
-          items: getCart(),
-          timestamp: new Date().toISOString()
-        };
-        
-        // Thêm thông tin giao hàng hoặc nhận tại cửa hàng
-        if (formData.deliveryMethod === 'shipping') {
-          formData.shippingInfo = {
-            province: document.getElementById('province').options[document.getElementById('province').selectedIndex].text,
-            district: document.getElementById('district').options[document.getElementById('district').selectedIndex].text,
-            ward: document.getElementById('ward').options[document.getElementById('ward').selectedIndex].text,
-            address: document.getElementById('address').value,
-            note: document.getElementById('addressNote').value
-          };
-        } else {
-          formData.pickupInfo = {
-            note: document.getElementById('pickupNote').value
-          };
+        // Apply validation result
+        if (!isValid) {
+          field.classList.add("error");
+          errorElement.textContent = message;
+          errorElement.style.display = "block";
         }
-        
-        // Lưu đơn hàng (trong thực tế sẽ gửi đến server)
-        const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-        orders.push(formData);
-        localStorage.setItem('orders', JSON.stringify(orders));
-        
-        // Xóa giỏ hàng
-        localStorage.removeItem('cart');
-        
-        // Thông báo thành công
-        alert(`🎉 Đơn hàng đã được đặt thành công!\n\nTổng tiền: ${formData.orderTotal}\nChúng tôi sẽ liên hệ với bạn qua số điện thoại: ${formData.customer.phone}`);
-        
-        // Quay về trang chủ
-        window.location.href = 'index.html';
-      });
-    }
 
-    // Validation functions
-    function validateField(field) {
-      const errorElement = document.getElementById(field.id + '-error');
-      if (!errorElement) return true;
-      
-      let isValid = true;
-      let message = '';
-      
-      // Clear previous error state
-      field.classList.remove('error');
-      errorElement.style.display = 'none';
-      
-      // Check required
-      if (field.hasAttribute('required') && !field.value.trim()) {
-        isValid = false;
-        message = 'Trường này là bắt buộc';
+        return isValid;
       }
-      
-      // Specific validations
-      else if (field.id === 'phone' && field.value.trim()) {
-        const phoneRegex = /^(0[0-9]{9,10})$/;
-        if (!phoneRegex.test(field.value.trim())) {
-          isValid = false;
-          message = 'Số điện thoại không hợp lệ (10-11 số, bắt đầu bằng 0)';
-        }
-      }
-      
-      else if (field.id === 'email' && field.value.trim()) {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(field.value.trim())) {
-          isValid = false;
-          message = 'Email không hợp lệ';
-        }
-      }
-      
-      // Apply validation result
-      if (!isValid) {
-        field.classList.add('error');
-        errorElement.textContent = message;
-        errorElement.style.display = 'block';
-      }
-      
-      return isValid;
-    }
-    
+
       function validateForm() {
-      let isValid = true;
-      const submitBtn = document.querySelector('.submit-btn');
-      
-      // Validate all enabled required fields
-      const requiredFields = document.querySelectorAll('#checkout-form [required]:not([disabled])');
-      requiredFields.forEach(field => {
-        if (!validateField(field)) {
-          isValid = false;
-        }
-      });
-      
-      // Special validation for shipping info
-      const dmEl = document.querySelector('input[name="deliveryMethod"]:checked');
-      const deliveryMethod = dmEl ? dmEl.value : null;
-      if (!deliveryMethod) {
-        isValid = false;
-      }
-      if (deliveryMethod === 'shipping') {
-        const shippingFields = ['province', 'district', 'ward', 'address'];
-        shippingFields.forEach(fieldId => {
-          const field = document.getElementById(fieldId);
-          if (field && !validateField(field)) {
+        let isValid = true;
+        const submitBtn = document.querySelector(".submit-btn");
+
+        // Validate all enabled required fields
+        const requiredFields = document.querySelectorAll(
+          "#checkout-form [required]:not([disabled])",
+        );
+        requiredFields.forEach((field) => {
+          if (!validateField(field)) {
             isValid = false;
           }
         });
+
+        // Special validation for shipping info
+        const dmEl = document.querySelector(
+          'input[name="deliveryMethod"]:checked',
+        );
+        const deliveryMethod = dmEl ? dmEl.value : null;
+        if (!deliveryMethod) {
+          isValid = false;
+        }
+        if (deliveryMethod === "shipping") {
+          const shippingFields = ["province", "district", "ward", "address"];
+          shippingFields.forEach((fieldId) => {
+            const field = document.getElementById(fieldId);
+            if (field && !validateField(field)) {
+              isValid = false;
+            }
+          });
+        }
+
+        // Update submit button state
+        submitBtn.disabled = !isValid;
+
+        return isValid;
       }
-      
-      // Update submit button state
-      submitBtn.disabled = !isValid;
-      
-      return isValid;
-    }
-  </script>
-</body>
+    </script>
+  </body>
 </html>
