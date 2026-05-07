@@ -254,3 +254,64 @@ window.getCurrentUser = getCurrentUser;
 // initialize UI areas
 updateCartCount();
 updateUserArea();
+
+// Lightweight toast helper (hot-toast-like)
+function showToast(message, type = "success", opts = {}) {
+  try {
+    const duration = typeof opts.duration === "number" ? opts.duration : 3000;
+    let container = document.querySelector(".toast-container");
+    if (!container) {
+      container = document.createElement("div");
+      container.className = "toast-container";
+      document.body.appendChild(container);
+    }
+
+    const toast = document.createElement("div");
+    toast.className = "toast " + (type || "");
+
+    const icon = document.createElement("div");
+    icon.className = "toast-icon";
+    icon.textContent = type === "error" ? "✖" : type === "info" ? "ℹ" : "✓";
+
+    const body = document.createElement("div");
+    body.className = "toast-body";
+    body.textContent = message || "";
+
+    const close = document.createElement("button");
+    close.className = "close";
+    close.type = "button";
+    close.innerHTML = "&times;";
+
+    close.addEventListener("click", () => {
+      hide();
+    });
+
+    toast.appendChild(icon);
+    toast.appendChild(body);
+    toast.appendChild(close);
+
+    container.appendChild(toast);
+
+    // force reflow then show
+    requestAnimationFrame(() => toast.classList.add("show"));
+
+    let removed = false;
+    function hide() {
+      if (removed) return;
+      removed = true;
+      toast.classList.remove("show");
+      setTimeout(() => {
+        toast.remove();
+      }, 260);
+    }
+
+    setTimeout(hide, duration);
+    return { hide };
+  } catch (e) {
+    // fallback
+    console.error("Toast error", e);
+  }
+}
+
+// expose globally
+window.showToast = showToast;
