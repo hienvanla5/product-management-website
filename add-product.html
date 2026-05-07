@@ -1,308 +1,414 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Add Product</title>
-  <link rel="stylesheet" href="css/style.css" />
-  <style>
-    /* CSS hiển thị lỗi */
-    .error-msg { color: red; font-size: 0.85em; margin-top: 4px; display: none; }
-    .input-error { border: 1px solid red; background-color: #fff0f0; }
-    
-    /* Làm mờ ô input khi bị Disabled */
-    input:disabled, textarea:disabled {
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Add Product</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <style>
+      /* CSS hiển thị lỗi */
+      .error-msg {
+        color: red;
+        font-size: 0.85em;
+        margin-top: 4px;
+        display: none;
+      }
+      .input-error {
+        border: 1px solid red;
+        background-color: #fff0f0;
+      }
+
+      /* Làm mờ ô input khi bị Disabled */
+      input:disabled,
+      textarea:disabled {
         background-color: #f0f0f0; /* Màu xám nhẹ */
         cursor: not-allowed;
         opacity: 0.7;
-    }
-    
-    /* Hiệu ứng khi focus */
-    input:focus, textarea:focus {
+      }
+
+      /* Hiệu ứng khi focus */
+      input:focus,
+      textarea:focus {
         border-color: #007bff;
         outline: none;
         background-color: #fff;
-    }
+      }
 
-    button { margin-top: 20px; padding: 10px 20px; cursor: pointer; }
-    button:disabled { background-color: #ccc; cursor: not-allowed; }
-  </style>
-</head>
-<body>
-  <header class="site-header">
-    <h1>Add Product</h1>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="add-product.html">Add Product</a>
-      <a href="checkout.html">Checkout (<span id="cart-count">0</span>)</a>
-    </nav>
-  </header>
+      button {
+        margin-top: 20px;
+        padding: 10px 20px;
+        cursor: pointer;
+      }
+      button:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <h1>Add Product</h1>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="add-product.html">Add Product</a>
+        <a href="checkout.html">Checkout (<span id="cart-count">0</span>)</a>
+      </nav>
+    </header>
 
-  <main>
-    <form id="addForm" class="multistep" novalidate>
-      <div class="step">
-        <h2>Product Info</h2>
-        
-        <label>Product Name (Max 50 chars)</label>
-        <input name="name" id="name" type="text" required />
-        <div id="name-error" class="error-msg"></div>
+    <main>
+      <form id="addForm" class="multistep" novalidate>
+        <div class="step">
+          <h2>Product Info</h2>
 
-        <label>Brand (Max 50 chars)</label>
-        <input name="brand" id="brand" type="text" required />
-        <div id="brand-error" class="error-msg"></div>
+          <label>Product Name (Max 50 chars)</label>
+          <input name="name" id="name" type="text" required />
+          <div id="name-error" class="error-msg"></div>
 
-        <label>Category (Max 50 chars)</label>
-        <input name="category" id="category" type="text" required />
-        <div id="category-error" class="error-msg"></div>
+          <label>Brand (Max 50 chars)</label>
+          <input name="brand" id="brand" type="text" required />
+          <div id="brand-error" class="error-msg"></div>
 
-        <label>Price (Numeric > 0)</label>
-        <input name="price" id="price" type="text" step="0.01" required />
-        <div id="price-error" class="error-msg"></div>
+          <label>Category (Max 50 chars)</label>
+          <input name="category" id="category" type="text" required />
+          <div id="category-error" class="error-msg"></div>
 
-        <label>Description (Max 255 chars, No special chars @#$%)</label>
-        <textarea name="description" id="description" rows="4"></textarea>
-        <div id="description-error" class="error-msg"></div>
+          <label>Price (Numeric > 0)</label>
+          <input name="price" id="price" type="text" step="0.01" required />
+          <div id="price-error" class="error-msg"></div>
 
-        <label>Colors (e.g. Red, Blue)</label>
-        <input name="colors" id="colors" type="text" placeholder="Red, Blue" />
-        <div id="colors-error" class="error-msg"></div> 
+          <label>Description (Max 255 chars, No special chars @#$%)</label>
+          <textarea name="description" id="description" rows="4"></textarea>
+          <div id="description-error" class="error-msg"></div>
 
-        <label>Sizes (e.g. S, M)</label>
-        <input name="sizes" id="sizes" type="text" placeholder="S, M, L" />
-        <div id="sizes-error" class="error-msg"></div> 
+          <label>Colors (e.g. Red, Blue)</label>
+          <input
+            name="colors"
+            id="colors"
+            type="text"
+            placeholder="Red, Blue"
+          />
+          <div id="colors-error" class="error-msg"></div>
 
-        <label>Image URL</label>
-        <input name="image" id="image" type="url" />
-        <div id="image-error" class="error-msg"></div>
+          <label>Sizes (e.g. S, M)</label>
+          <input name="sizes" id="sizes" type="text" placeholder="S, M, L" />
+          <div id="sizes-error" class="error-msg"></div>
 
-        <div class="actions">
-          <button type="submit" id="submit" class="btn primary">Add Product</button>
+          <label>Image URL</label>
+          <input name="image" id="image" type="url" />
+          <div id="image-error" class="error-msg"></div>
+
+          <div class="actions">
+            <button type="submit" id="submit" class="btn primary">
+              Add Product
+            </button>
+          </div>
         </div>
-      </div>
-    </form>
-  </main>
+      </form>
+    </main>
 
-  <script src="js/app.js"></script>
-  
-  <script>
-    // --- CẤU HÌNH REGEX ---
-    // 1. Chỉ cho phép chữ, số, khoảng trắng và tiếng Việt (Dùng cho Name, Brand, Category)
-    const REGEX_TEXT_STRICT = /^[a-zA-Z0-9\s\u00C0-\u1EF9]+$/; 
-    
-    // 2. MỚI: Description an toàn (Cho phép chữ, số, tiếng Việt và dấu .,-) 
-    // KHÔNG cho phép: @ # $ % ^ & * ( ) < > / \ |
-    const REGEX_DESC_SAFE = /^[a-zA-Z0-9\s\u00C0-\u1EF9.,-]+$/;
+    <script src="js/app.js"></script>
 
-    // 3. Danh sách (Colors, Sizes)
-    const REGEX_STRICT_LIST = /^[a-zA-Z0-9\u00C0-\u1EF9]+(,\s*[a-zA-Z0-9\u00C0-\u1EF9]+)*$/;
-    
-    // 4. URL Hình ảnh
-    const REGEX_IMAGE = /^(http|https):\/\/[^ "]+(\.(jpg|png|jpeg|gif|webp))$/i;
+    <script>
+      // --- CẤU HÌNH REGEX ---
+      // 1. Chỉ cho phép chữ, số, khoảng trắng và tiếng Việt (Dùng cho Name, Brand, Category)
+      const REGEX_TEXT_STRICT = /^[a-zA-Z0-9\s\u00C0-\u1EF9]+$/;
 
-    const addForm = document.getElementById('addForm');
+      // 2. MỚI: Description an toàn (Cho phép chữ, số, tiếng Việt và dấu .,-)
+      // KHÔNG cho phép: @ # $ % ^ & * ( ) < > / \ |
+      const REGEX_DESC_SAFE = /^[a-zA-Z0-9\s\u00C0-\u1EF9.,-]+$/;
 
-    function setError(fieldObj, message) {
+      // 3. Danh sách (Colors, Sizes)
+      const REGEX_STRICT_LIST =
+        /^[a-zA-Z0-9\u00C0-\u1EF9]+(,\s*[a-zA-Z0-9\u00C0-\u1EF9]+)*$/;
+
+      // 4. URL Hình ảnh
+      const REGEX_IMAGE =
+        /^(http|https):\/\/[^ "]+(\.(jpg|png|jpeg|gif|webp))$/i;
+
+      const addForm = document.getElementById("addForm");
+
+      function setError(fieldObj, message) {
         fieldObj.msg = message;
         return false;
-    }
+      }
 
-    const fields = [
-      {
-        id: 'name', el: document.getElementById('name'), required: true, touched: false,
-        validator: function(v) { 
+      const fields = [
+        {
+          id: "name",
+          el: document.getElementById("name"),
+          required: true,
+          touched: false,
+          validator: function (v) {
             const t = v.trim();
-            if (t === '') return setError(this, 'Name is required');
-            if (t.length > 50) return setError(this, 'Name too long (Max 50 chars)');
-            if (!REGEX_TEXT_STRICT.test(t)) return setError(this, 'Name contains special characters');
-            return true; 
-        }, msg: ''
-      },
-      {
-        id: 'brand', el: document.getElementById('brand'), required: true, touched: false,
-        validator: function(v) { 
+            if (t === "") return setError(this, "Name is required");
+            if (t.length > 50)
+              return setError(this, "Name too long (Max 50 chars)");
+            if (!REGEX_TEXT_STRICT.test(t))
+              return setError(this, "Name contains special characters");
+            return true;
+          },
+          msg: "",
+        },
+        {
+          id: "brand",
+          el: document.getElementById("brand"),
+          required: true,
+          touched: false,
+          validator: function (v) {
             const t = v.trim();
-            if (t === '') return setError(this, 'Brand is required');
-            if (t.length > 50) return setError(this, 'Brand too long (Max 50 chars)');
-            if (!REGEX_TEXT_STRICT.test(t)) return setError(this, 'Brand contains special characters');
-            return true; 
-        }, msg: ''
-      },
-      {
-        id: 'category', el: document.getElementById('category'), required: true, touched: false,
-        validator: function(v) { 
+            if (t === "") return setError(this, "Brand is required");
+            if (t.length > 50)
+              return setError(this, "Brand too long (Max 50 chars)");
+            if (!REGEX_TEXT_STRICT.test(t))
+              return setError(this, "Brand contains special characters");
+            return true;
+          },
+          msg: "",
+        },
+        {
+          id: "category",
+          el: document.getElementById("category"),
+          required: true,
+          touched: false,
+          validator: function (v) {
             const t = v.trim();
-            if (t === '') return setError(this, 'Category is required');
-            if (t.length > 50) return setError(this, 'Category too long (Max 50 chars)');
-            if (!REGEX_TEXT_STRICT.test(t)) return setError(this, 'Category contains special characters');
-            return true; 
-        }, msg: ''
-      },
-      {
-        id: 'price', el: document.getElementById('price'), required: true, touched: false,
-        validator: function(v) {
+            if (t === "") return setError(this, "Category is required");
+            if (t.length > 50)
+              return setError(this, "Category too long (Max 50 chars)");
+            if (!REGEX_TEXT_STRICT.test(t))
+              return setError(this, "Category contains special characters");
+            return true;
+          },
+          msg: "",
+        },
+        {
+          id: "price",
+          el: document.getElementById("price"),
+          required: true,
+          touched: false,
+          validator: function (v) {
             const valStr = v.trim();
-            if (valStr === '') return setError(this, 'Price is required');
-            if (isNaN(Number(valStr))) return setError(this, 'Price is required');
-            if (Number(valStr) <= 0) return setError(this, 'Price must be positive');
+            if (valStr === "") return setError(this, "Price is required");
+            if (isNaN(Number(valStr)))
+              return setError(this, "Price is required");
+            if (Number(valStr) <= 0)
+              return setError(this, "Price must be positive");
             return true;
-        }, msg: ''
-      },
-      {
-        id: 'description', el: document.getElementById('description'), required: true, touched: false,
-        validator: function(v) { 
+          },
+          msg: "",
+        },
+        {
+          id: "description",
+          el: document.getElementById("description"),
+          required: true,
+          touched: false,
+          validator: function (v) {
             const t = v.trim();
-            if (t === '') return setError(this, 'Description is required');
-            if (t.length > 255) return setError(this, 'Description too long (Max 255 chars)'); 
-            
+            if (t === "") return setError(this, "Description is required");
+            if (t.length > 255)
+              return setError(this, "Description too long (Max 255 chars)");
+
             // SỬA: Dùng Regex chặt chẽ hơn để cấm ký tự đặc biệt
-            if (!REGEX_DESC_SAFE.test(t)) return setError(this, 'Description contains special characters');
-            
-            return true; 
-        }, msg: ''
-      },
-      {
-        id: 'colors', el: document.getElementById('colors'), required: true, touched: false,
-        validator: function(v) { 
-            const t = v.trim(); 
-            if (t === '') return setError(this, 'Colors are required');
-            if (!REGEX_STRICT_LIST.test(t)) return setError(this, 'Invalid Color format');
-            return true; 
-        }, msg: ''
-      },
-      {
-        id: 'sizes', el: document.getElementById('sizes'), required: true, touched: false,
-        validator: function(v) { 
-            const t = v.trim(); 
-            if (t === '') return setError(this, 'Sizes are required');
-            if (!REGEX_STRICT_LIST.test(t)) return setError(this, 'Invalid Size format');
-            return true; 
-        }, msg: ''
-      },
-      {
-        id: 'image', el: document.getElementById('image'), required: true, touched: false,
-        validator: function(v) {
-            const t = v.trim();
-            if (t === '') return setError(this, 'Image URL is required');
-            if (!REGEX_IMAGE.test(t)) return setError(this, 'Invalid Image URL (.jpg, .png...)');
+            if (!REGEX_DESC_SAFE.test(t))
+              return setError(this, "Description contains special characters");
+
             return true;
-        }, msg: ''
+          },
+          msg: "",
+        },
+        {
+          id: "colors",
+          el: document.getElementById("colors"),
+          required: true,
+          touched: false,
+          validator: function (v) {
+            const t = v.trim();
+            if (t === "") return setError(this, "Colors are required");
+            if (!REGEX_STRICT_LIST.test(t))
+              return setError(this, "Invalid Color format");
+            return true;
+          },
+          msg: "",
+        },
+        {
+          id: "sizes",
+          el: document.getElementById("sizes"),
+          required: true,
+          touched: false,
+          validator: function (v) {
+            const t = v.trim();
+            if (t === "") return setError(this, "Sizes are required");
+            if (!REGEX_STRICT_LIST.test(t))
+              return setError(this, "Invalid Size format");
+            return true;
+          },
+          msg: "",
+        },
+        {
+          id: "image",
+          el: document.getElementById("image"),
+          required: true,
+          touched: false,
+          validator: function (v) {
+            const t = v.trim();
+            if (t === "") return setError(this, "Image URL is required");
+            if (!REGEX_IMAGE.test(t))
+              return setError(this, "Invalid Image URL (.jpg, .png...)");
+            return true;
+          },
+          msg: "",
+        },
+      ];
+
+      function getErrorEl(id) {
+        return document.getElementById(id + "-error");
       }
-    ];
 
-    function getErrorEl(id){ return document.getElementById(id+'-error'); }
-
-    function isFieldValid(field){
-      const val = (field.el && field.el.value !== undefined) ? String(field.el.value) : '';
-      return field.required ? !!field.validator.call(field, val) : true;
-    }
-
-    function showError(field){
-      if(!field.el) return;
-      field.el.classList.add('input-error');
-      const errEl = getErrorEl(field.id);
-      if(errEl){ 
-          errEl.style.display = 'block'; 
-          errEl.textContent = field.msg; 
+      function isFieldValid(field) {
+        const val =
+          field.el && field.el.value !== undefined
+            ? String(field.el.value)
+            : "";
+        return field.required ? !!field.validator.call(field, val) : true;
       }
-    }
 
-    function hideError(field){
-      if(!field.el) return;
-      field.el.classList.remove('input-error');
-      const errEl = getErrorEl(field.id);
-      if(errEl){ errEl.style.display = 'none'; }
-    }
+      function showError(field) {
+        if (!field.el) return;
+        field.el.classList.add("input-error");
+        const errEl = getErrorEl(field.id);
+        if (errEl) {
+          errEl.style.display = "block";
+          errEl.textContent = field.msg;
+        }
+      }
 
-    function validateFieldDisplay(field){
-      const ok = isFieldValid(field);
-      if(field.touched && !ok) {
+      function hideError(field) {
+        if (!field.el) return;
+        field.el.classList.remove("input-error");
+        const errEl = getErrorEl(field.id);
+        if (errEl) {
+          errEl.style.display = "none";
+        }
+      }
+
+      function validateFieldDisplay(field) {
+        const ok = isFieldValid(field);
+        if (field.touched && !ok) {
           showError(field);
-      } else {
+        } else {
           hideError(field);
-      }
-      return ok;
-    }
-
-    function updateStates(){
-      let prevAllValid = true;
-
-      for(let i=0; i<fields.length; i++){
-        const f = fields[i];
-        
-        // 1. Logic khóa ô input
-        if(!prevAllValid){ 
-            if(f.el) f.el.disabled = true;
-        } else { 
-            if(f.el) f.el.disabled = false;
         }
-        
-        // 2. Logic tuần tự
-        if(f.required){
-          if(!isFieldValid(f)) {
-              prevAllValid = false; 
+        return ok;
+      }
+
+      function updateStates() {
+        let prevAllValid = true;
+
+        for (let i = 0; i < fields.length; i++) {
+          const f = fields[i];
+
+          // 1. Logic khóa ô input
+          if (!prevAllValid) {
+            if (f.el) f.el.disabled = true;
+          } else {
+            if (f.el) f.el.disabled = false;
           }
+
+          // 2. Logic tuần tự
+          if (f.required) {
+            if (!isFieldValid(f)) {
+              prevAllValid = false;
+            }
+          }
+
+          // 3. Logic hiển thị
+          validateFieldDisplay(f);
         }
-        
-        // 3. Logic hiển thị
-        validateFieldDisplay(f);
+
+        const allReqOk = fields
+          .filter((f) => f.required)
+          .every((f) => isFieldValid(f));
+        const submitBtn = document.getElementById("submit");
+        if (submitBtn) submitBtn.disabled = !allReqOk;
       }
-      
-      const allReqOk = fields.filter(f=>f.required).every(f => isFieldValid(f));
-      const submitBtn = document.getElementById('submit');
-      if(submitBtn) submitBtn.disabled = !allReqOk;
-    }
 
-    fields.forEach(f=>{
-      if(!f.el) return;
-      
-      // BLUR: Đánh dấu đã xem -> Check lỗi đỏ
-      f.el.addEventListener('blur', ()=>{ 
-          f.touched = true; 
-          updateStates(); 
-      });
-      
-      // INPUT: Đang gõ -> Chỉ check logic mở khóa (chưa hiện đỏ nếu chưa touched)
-      f.el.addEventListener('input', ()=>{ 
-          updateStates(); 
-      });
-    });
+      fields.forEach((f) => {
+        if (!f.el) return;
 
-    updateStates();
+        // BLUR: Đánh dấu đã xem -> Check lỗi đỏ
+        f.el.addEventListener("blur", () => {
+          f.touched = true;
+          updateStates();
+        });
 
-    addForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      
-      let allValid = true;
-      fields.filter(f=>f.required).forEach(f=>{ 
-        f.touched = true; 
-        if(!isFieldValid(f)) allValid = false; 
+        // INPUT: Đang gõ -> Chỉ check logic mở khóa (chưa hiện đỏ nếu chưa touched)
+        f.el.addEventListener("input", () => {
+          updateStates();
+        });
       });
-      
+
       updateStates();
 
-      if(!allValid) return;
+      addForm.addEventListener("submit", (e) => {
+        e.preventDefault();
 
-      const product = {
-        id: Date.now().toString(),
-        name: document.getElementById('name').value.trim(),
-        brand: document.getElementById('brand').value.trim(),
-        category: document.getElementById('category').value.trim(),
-        price: Number(document.getElementById('price').value),
-        description: document.getElementById('description').value.trim(),
-        colors: document.getElementById('colors').value.split(',').map(s=>s.trim()).filter(Boolean),
-        sizes: document.getElementById('sizes').value.split(',').map(s=>s.trim()).filter(Boolean),
-        image: document.getElementById('image').value.trim(),
-      };
-      
-      try {
-        const products = typeof getProducts === 'function' ? getProducts() : [];
-        products.unshift(product);
-        if (typeof saveProducts === 'function') { saveProducts(products); } 
-        else { localStorage.setItem('products', JSON.stringify(products)); }
-        alert('Product added successfully!');
-        window.location.href = 'index.html';
-      } catch (err) { alert('Error: ' + err.message); }
-    });
-  </script>
-</body>
+        let allValid = true;
+        fields
+          .filter((f) => f.required)
+          .forEach((f) => {
+            f.touched = true;
+            if (!isFieldValid(f)) allValid = false;
+          });
+
+        updateStates();
+
+        if (!allValid) return;
+
+        const product = {
+          id: Date.now().toString(),
+          name: document.getElementById("name").value.trim(),
+          brand: document.getElementById("brand").value.trim(),
+          category: document.getElementById("category").value.trim(),
+          price: Number(document.getElementById("price").value),
+          description: document.getElementById("description").value.trim(),
+          colors: document
+            .getElementById("colors")
+            .value.split(",")
+            .map((s) => s.trim())
+            .filter(Boolean),
+          sizes: document
+            .getElementById("sizes")
+            .value.split(",")
+            .map((s) => s.trim())
+            .filter(Boolean),
+          image: document.getElementById("image").value.trim(),
+        };
+
+        try {
+          const products =
+            typeof getProducts === "function" ? getProducts() : [];
+          products.unshift(product);
+          if (typeof saveProducts === "function") {
+            saveProducts(products);
+          } else {
+            localStorage.setItem("products", JSON.stringify(products));
+          }
+          if (typeof showToast === "function") {
+            showToast("Product added successfully!", "success");
+          } else {
+            alert("Product added successfully!");
+          }
+          setTimeout(() => {
+            window.location.href = "index.html";
+          }, 1100);
+        } catch (err) {
+          if (typeof showToast === "function") {
+            showToast("Error: " + err.message, "error");
+          } else {
+            alert("Error: " + err.message);
+          }
+        }
+      });
+    </script>
+  </body>
 </html>
