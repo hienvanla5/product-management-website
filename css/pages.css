@@ -1,1 +1,300 @@
+/* Styles moved from individual HTML pages (add-product.html, checkout.html) */
 
+/* --- add-product.html styles --- */
+/* CSS hiển thị lỗi */
+.error-msg {
+  color: red;
+  font-size: 0.85em;
+  margin-top: 4px;
+  display: none;
+}
+.input-error {
+  border: 1px solid red;
+  background-color: #fff0f0;
+}
+
+/* Làm mờ ô input khi bị Disabled */
+input:disabled,
+textarea:disabled {
+  background-color: #f0f0f0; /* Màu xám nhẹ */
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Hiệu ứng khi focus */
+input:focus,
+textarea:focus {
+  border-color: #007bff;
+  outline: none;
+  background-color: #fff;
+}
+
+button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* --- checkout.html styles --- */
+/* Reset và base styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+body.checkout-page {
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.6;
+  color: #333;
+  background-color: #f8f9fa;
+}
+
+.site-header {
+  background: white;
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+.site-header h1 {
+  font-size: 1.5rem;
+  color: #2563eb;
+}
+nav a {
+  margin-left: 1.5rem;
+  text-decoration: none;
+  color: #4b5563;
+  font-weight: 500;
+}
+nav a:hover {
+  color: #2563eb;
+}
+main.checkout-main {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 1.5rem 2rem;
+}
+
+/* Form container */
+.checkout-form {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+.checkout-form h2 {
+  color: #1f2937;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #e5e7eb;
+  font-size: 1.5rem;
+}
+.form-section {
+  margin-bottom: 2rem;
+}
+.section-title {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  color: #374151;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+.section-title svg {
+  margin-right: 0.75rem;
+  color: #2563eb;
+}
+.form-group {
+  margin-bottom: 1.5rem;
+}
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #4b5563;
+}
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="tel"],
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 0.875rem;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s;
+  background: white;
+}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+.form-group input.error,
+.form-group select.error,
+.form-group textarea.error {
+  border-color: #dc2626;
+}
+.error-message {
+  color: #dc2626;
+  font-size: 0.875rem;
+  margin-top: 0.375rem;
+  display: none;
+}
+.radio-group {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+.radio-option {
+  flex: 1;
+  min-width: 200px;
+}
+.radio-option input[type="radio"] {
+  display: none;
+}
+.radio-label {
+  display: block;
+  padding: 1.25rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.radio-label:hover {
+  border-color: #2563eb;
+  background: #f0f9ff;
+}
+.radio-label.selected {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+.radio-label .title {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  color: #1f2937;
+}
+.radio-label .desc {
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+.address-cascade {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.shipping-info {
+  padding: 1.5rem;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  margin-top: 1rem;
+  animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.order-summary-simple {
+  background: #f8fafc;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-top: 2rem;
+  border: 1px solid #e2e8f0;
+}
+.checkout-layout {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+  margin-top: 0.5rem;
+}
+.checkout-form {
+  flex: 2 1 0px;
+  margin-top: 0;
+}
+.order-summary-simple {
+  flex: 1 0 280px;
+  margin-top: 0;
+  position: sticky;
+  top: 1.25rem;
+  height: fit-content;
+}
+.summary-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+.summary-total .amount {
+  color: #2563eb;
+  font-size: 1.5rem;
+}
+.submit-btn {
+  width: 100%;
+  padding: 1rem;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 2rem;
+}
+.submit-btn:hover {
+  background: #1d4ed8;
+}
+.submit-btn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+#empty-msg {
+  text-align: center;
+  color: #6b7280;
+  font-size: 1.1rem;
+  padding: 3rem;
+  background: white;
+  border-radius: 12px;
+}
+@media (max-width: 640px) {
+  .site-header {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  nav a {
+    margin: 0 0.75rem;
+  }
+  .checkout-form {
+    padding: 1.5rem;
+  }
+  .address-cascade {
+    grid-template-columns: 1fr;
+  }
+  .radio-group {
+    flex-direction: column;
+  }
+  .radio-option {
+    min-width: 100%;
+  }
+}
